@@ -29,20 +29,21 @@ func main() {
 		log.Fatal(err)
 	}
 
+	rootRouter := chi.NewRouter()
 	// 创建 Router
-	router := chi.NewRouter()
+	apiRouter := chi.NewRouter()
 
 	humaCfg := huma.DefaultConfig("Evorsio API", "1.0.0")
 	humaCfg.CreateHooks = nil
 
 	// 创建 Huma API
 	api := humachi.New(
-		router,
+		apiRouter,
 		humaCfg,
 	)
 
 	// 注册接口
-	huma.Get(api, "/api/health", func(ctx context.Context, input *struct{}) (*HealthResponse, error) {
+	huma.Get(api, "/health", func(ctx context.Context, input *struct{}) (*HealthResponse, error) {
 		return &HealthResponse{
 			Body: Health{
 				Message: "ok",
@@ -50,11 +51,13 @@ func main() {
 		}, nil
 	})
 
+	rootRouter.Mount("/api", apiRouter)
+
 	addr := fmt.Sprintf("%s:%d", cfg.Server.Host, cfg.Server.Port)
 
 	server := &http.Server{
 		Addr:    addr,
-		Handler: router,
+		Handler: rootRouter,
 	}
 
 	log.Printf("Server listening on %s", addr)
