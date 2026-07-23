@@ -5,8 +5,6 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface Health {
-  /** A URL to the JSON Schema for this object. */
-  readonly $schema?: string;
+export interface Response {
   message: string;
 }

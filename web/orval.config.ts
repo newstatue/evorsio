@@ -11,6 +11,7 @@ export default defineConfig({
             client: "react-query",
             mode: "tags",
             clean: true,
+            baseUrl: "/api"
         }
     },
 });

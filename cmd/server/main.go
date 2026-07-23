@@ -1,68 +1,91 @@
 package main
 
 import (
-	"context"
 	"errors"
+	"evorsio/internal/app"
+	"evorsio/internal/auth"
+	"evorsio/internal/platform/cache"
+	"evorsio/internal/platform/config"
+	"evorsio/internal/platform/database"
 	"fmt"
 	"log"
+	"log/slog"
 	"net/http"
-
-	"evorsio/internal/config"
 
 	"github.com/danielgtaylor/huma/v2"
 	"github.com/danielgtaylor/huma/v2/adapters/humachi"
 	"github.com/go-chi/chi/v5"
 )
 
-type Health struct {
-	Message string `json:"message"`
-}
-
-type HealthResponse struct {
-	Body Health
-}
-
 func main() {
-	// 加载配置
-	cfg, err := config.Load()
-	if err != nil {
-		log.Fatal(err)
-	}
+	application := bootstrap()
+	defer application.DB.Close()
 
 	rootRouter := chi.NewRouter()
-	// 创建 Router
 	apiRouter := chi.NewRouter()
-
-	humaCfg := huma.DefaultConfig("Evorsio API", "1.0.0")
-	humaCfg.CreateHooks = nil
-
-	// 创建 Huma API
-	api := humachi.New(
-		apiRouter,
-		humaCfg,
-	)
-
-	// 注册接口
-	huma.Get(api, "/health", func(ctx context.Context, input *struct{}) (*HealthResponse, error) {
-		return &HealthResponse{
-			Body: Health{
-				Message: "ok",
-			},
-		}, nil
-	})
 
 	rootRouter.Mount("/api", apiRouter)
 
-	addr := fmt.Sprintf("%s:%d", cfg.Server.Host, cfg.Server.Port)
+	humaCfg := huma.DefaultConfig("Evorsio API", "1.0.0")
+	humaCfg.CreateHooks = nil
+	humaCfg.Servers = []*huma.Server{
+		{
+			URL: "/api",
+		},
+	}
+
+	api := humachi.New(apiRouter, humaCfg)
+
+	auth.Register(
+		api,
+		application.Config,
+		application.DB,
+		application.Cache,
+		application.Logger,
+	)
+
+	addr := fmt.Sprintf(
+		"%s:%d",
+		application.Config.Server.Host,
+		application.Config.Server.Port,
+	)
 
 	server := &http.Server{
 		Addr:    addr,
 		Handler: rootRouter,
 	}
 
-	log.Printf("Server listening on %s", addr)
+	application.Logger.Info(
+		"starting server",
+		"addr", addr,
+	)
 
-	if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+	if err := server.ListenAndServe(); err != nil &&
+		!errors.Is(err, http.ErrServerClosed) {
+		application.Logger.Error(
+			"failed to start server",
+			"error", err,
+		)
+	}
+}
+
+func bootstrap() *app.App {
+	cfg, err := config.Load()
+	if err != nil {
 		log.Fatal(err)
 	}
+
+	db, err := database.New(cfg.Database.DSN)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	rdb, err := cache.New(cfg.Cache.URI)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	logger := slog.Default()
+
+	return app.New(cfg, db, rdb, logger)
 }

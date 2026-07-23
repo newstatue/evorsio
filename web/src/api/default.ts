@@ -21,7 +21,7 @@ import type {
 
 import type {
   ErrorModel,
-  Health
+  Response
 } from './model';
 
 
@@ -52,7 +52,7 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
 };
 
 export type getHealthResponse200 = {
-  data: Health
+  data: Response
   status: 200
 }
 
@@ -75,7 +75,7 @@ export const getGetHealthUrl = () => {
 
 
 
-  return `/health`
+  return `/api/health`
 }
 
 /**
@@ -105,7 +105,7 @@ export const getHealth = async ( options?: RequestInit): Promise<getHealthRespon
 
 export const getGetHealthQueryKey = () => {
     return [
-    `/health`
+    `/api/health`
     ] as const;
     }
 

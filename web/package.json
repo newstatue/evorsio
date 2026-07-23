@@ -9,6 +9,7 @@
     "lint": "eslint .",
     "format": "prettier --write \"**/*.{ts,tsx}\"",
     "typecheck": "tsc --noEmit",
+    "openapi": "orval",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -23,6 +24,7 @@
     "orval": "^8.22.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
+    "react-router-dom": "^7.18.1",
     "shadcn": "^4.13.1",
     "tailwind-merge": "^3.6.0",
     "tailwindcss": "^4",

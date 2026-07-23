@@ -8,8 +8,6 @@ import (
 )
 
 func Load() (*Config, error) {
-	// 本地开发时读取 .env。
-	// 文件不存在时不报错，因为生产环境通常直接注入环境变量。
 	_ = godotenv.Load()
 
 	cfg, err := env.ParseAs[Config]()

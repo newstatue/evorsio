@@ -1,21 +1,29 @@
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
+import { useGetHealth } from "@/api/default";
 
-export function App() {
-  return (
-    <div className="flex min-h-svh p-6">
-      <div className="flex max-w-md min-w-0 flex-col gap-4 text-sm leading-loose">
+export default function App() {
+    const { data, isPending, refetch } = useGetHealth();
+
+    if (isPending) {
+        return <div>正在检查服务状态...</div>;
+    }
+
+    if (!data) {
+        return <div>暂无数据</div>;
+    }
+
+    if (data.status !== 200) {
+        return <div>服务异常：{data.data.detail}</div>;
+    }
+
+    return (
         <div>
-          <h1 className="font-medium">Project ready!</h1>
-          <p>You may now add components and start building.</p>
-          <p>We&apos;ve already added the button component for you.</p>
-          <Button className="mt-2">Button</Button>
-        </div>
-        <div className="font-mono text-xs text-muted-foreground">
-          (Press <kbd>d</kbd> to toggle dark mode)
-        </div>
-      </div>
-    </div>
-  )
-}
+            <p>状态码：{data.status}</p>
+            <p>服务状态：{data.data.message}</p>
 
-export default App
+            <Button onClick={() => void refetch()}>
+                重新检查
+            </Button>
+        </div>
+    );
+}

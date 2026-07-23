@@ -7,8 +7,6 @@
 import type { ErrorDetail } from './errorDetail';
 
 export interface ErrorModel {
-  /** A URL to the JSON Schema for this object. */
-  readonly $schema?: string;
   /** A human-readable explanation specific to this occurrence of the problem. */
   detail?: string;
   /**
