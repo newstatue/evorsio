@@ -7,13 +7,13 @@ services:
     environment:
       - USER_UID=1000
       - USER_GID=1000
+      - TZ=Asia/Shanghai
 
     networks:
       - evorsio-dev
 
     volumes:
       - ./volume/data:/data
-      - /etc/localtime:/etc/localtime:ro
 
     labels:
       - traefik.enable=true
