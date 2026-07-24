@@ -12,7 +12,7 @@ services:
       - evorsio-dev
 
     volumes:
-      - ./forgejo:/data
+      - ./volume/data:/data
       - /etc/localtime:/etc/localtime:ro
 
     labels:
