@@ -1,0 +1,27 @@
+services:
+  server:
+    image: codeberg.org/forgejo/forgejo:16
+    container_name: forgejo
+    restart: unless-stopped
+
+    environment:
+      - USER_UID=1000
+      - USER_GID=1000
+
+    networks:
+      - evorsio-dev
+
+    volumes:
+      - ./forgejo:/data
+      - /etc/localtime:/etc/localtime:ro
+
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=evorsio-dev
+      - traefik.http.routers.forgejo.rule=Host(`git.localhost`)
+      - traefik.http.routers.forgejo.entrypoints=web
+      - traefik.http.services.forgejo.loadbalancer.server.port=3000
+
+networks:
+  evorsio-dev:
+    external: true

@@ -6,12 +6,9 @@ services:
       - USER_UID=1000
       - USER_GID=1000
     restart: always
-    networks:
-      - evorsio
     volumes:
       - ./forgejo:/data
       - /etc/localtime:/etc/localtime:ro
-
-networks:
-  evorsio:
-    external: true
+    ports:
+      - '3000:3000'
+      - '222:22'
