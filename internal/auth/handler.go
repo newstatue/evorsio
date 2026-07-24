@@ -20,5 +20,14 @@ func (h *Handler) SendCode(ctx context.Context, input *SendCodeRequest) (*SendCo
 		return nil, err
 	}
 
-	return &SendCodeResponse{Body: SendCodeResponseBody{Message: "OK"}}, nil
+	return &SendCodeResponse{Body: SendCodeResponseBody{Message: "Send verification code successfully"}}, nil
+}
+
+func (h *Handler) Login(ctx context.Context, input *LoginRequest) (*LoginResponse, error) {
+	token, err := h.service.LoginAndReturnToken(ctx, input.Body.Email, input.Body.Code)
+	if err != nil {
+		return nil, err
+	}
+
+	return &LoginResponse{Body: LoginResponseBody{Token: token}}, nil
 }

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"evorsio/internal/app"
 	"evorsio/internal/auth"
+	"evorsio/internal/platform"
 	"evorsio/internal/platform/cache"
 	"evorsio/internal/platform/config"
 	"evorsio/internal/platform/database"
@@ -36,12 +37,18 @@ func main() {
 
 	api := humachi.New(apiRouter, humaCfg)
 
+	jwtService := platform.NewJWTService(
+		application.Config.App.JWTSecret,
+		application.Config.App.JWTIssuer,
+		application.Config.App.JWTExpire,
+	)
 	auth.Register(
 		api,
 		application.Config,
 		application.DB,
 		application.Cache,
 		application.Logger,
+		jwtService,
 	)
 
 	addr := fmt.Sprintf(

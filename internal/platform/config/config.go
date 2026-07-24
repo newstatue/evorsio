@@ -1,5 +1,7 @@
 package config
 
+import "time"
+
 type Config struct {
 	App      AppConfig
 	Server   ServerConfig
@@ -8,8 +10,11 @@ type Config struct {
 }
 
 type AppConfig struct {
-	Environment           string `env:"APP_ENV" envDefault:"dev"`
-	AuthCodeExpireSeconds int    `env:"AUTH_CODE_EXPIRE_SECONDS" envDefault:"300"`
+	Environment    string        `env:"APP_ENV" envDefault:"dev"`
+	AuthCodeExpire time.Duration `env:"AUTH_CODE_EXPIRE" envDefault:"5m"`
+	JWTSecret      string        `env:"JWT_SECRET"`
+	JWTIssuer      string        `env:"JWT_ISSUER" envDefault:"evorsio"`
+	JWTExpire      time.Duration `env:"JWT_EXPIRE" envDefault:"168h"`
 }
 
 type ServerConfig struct {
