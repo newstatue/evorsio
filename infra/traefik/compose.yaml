@@ -1,0 +1,40 @@
+services:
+  traefik:
+    image: docker.io/library/traefik:v3.7
+    container_name: traefik
+    restart: unless-stopped
+    command:
+      - --api.dashboard=true
+      - --providers.docker=true
+      - --providers.docker.endpoint=unix:///var/run/docker.sock
+      - --providers.docker.exposedbydefault=false
+      - --providers.file.directory=/dynamic
+      - --providers.file.watch=true
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --entrypoints.web.http.redirections.entrypoint.to=websecure
+      - --entrypoints.web.http.redirections.entrypoint.scheme=https
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - evorsio
+    volumes:
+      - /run/podman/podman.sock:/var/run/docker.sock:ro
+      - ./certs:/certs:ro
+      - ./dynamic:/dynamic:ro
+    security_opt:
+      - label=disable
+    labels:
+      - traefik.enable=true
+      # Dashboard 路由
+      - traefik.http.routers.traefik-dashboard.rule=Host(`dashboard.evorsio.com`)
+      - traefik.http.routers.traefik-dashboard.entrypoints=websecure
+      - traefik.http.routers.traefik-dashboard.tls=true
+      - traefik.http.routers.traefik-dashboard.service=api@internal
+      # 把 BasicAuth 中间件挂到 Dashboard 路由
+      - traefik.http.routers.traefik-dashboard.middlewares=dashboard-auth
+      - traefik.http.middlewares.dashboard-auth.basicauth.users=admin:$$2y$$05$$kSHXJh263aZ6.pHKFXyyBup.q7T0U/QPWBMym3s9kr/dCYiguJIN.
+
+networks:
+  evorsio:
