@@ -75,7 +75,7 @@ func (s *Service) LoginAndReturnToken(ctx context.Context, email string, code st
 	cachedCode, err := s.cache.Get(ctx, shared.KeyAuthCode(email)).Result()
 	if err != nil {
 		if errors.Is(err, redis.Nil) {
-			return "", ErrorCodeExpired
+			return "", ErrInvalidCode
 		}
 
 		s.logger.ErrorContext(
@@ -89,7 +89,7 @@ func (s *Service) LoginAndReturnToken(ctx context.Context, email string, code st
 	}
 
 	if cachedCode != code {
-		return "", ErrorInvalidCode
+		return "", ErrInvalidCode
 	}
 
 	_, _ = s.cache.Del(ctx, shared.KeyAuthCode(email)).Result()
@@ -97,7 +97,7 @@ func (s *Service) LoginAndReturnToken(ctx context.Context, email string, code st
 	userEntity, err := s.userRepo.FindByEmail(ctx, email)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			userEntity, err = s.userRepo.Create(ctx, shared.NewUser(email))
+			userEntity, err = s.userRepo.Create(ctx, user.NewUser(email))
 			if err != nil {
 
 				s.logger.ErrorContext(
@@ -120,8 +120,8 @@ func (s *Service) LoginAndReturnToken(ctx context.Context, email string, code st
 		}
 	}
 
-	if userEntity.Status == shared.UserStatusInactive {
-		return "", ErrorUserInactive
+	if userEntity.Status == user.StatusInactive {
+		return "", ErrUserInactive
 	}
 
 	token, err := s.jwtService.GenerateToken(userEntity.ID.String())

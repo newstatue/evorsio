@@ -17,7 +17,7 @@ func NewHandler(service *Service) *Handler {
 func (h *Handler) SendCode(ctx context.Context, input *SendCodeRequest) (*SendCodeResponse, error) {
 	err := h.service.SendCode(ctx, input.Body.Email)
 	if err != nil {
-		return nil, err
+		return nil, toHTTPError(err)
 	}
 
 	return &SendCodeResponse{Body: SendCodeResponseBody{Message: "Send verification code successfully"}}, nil
@@ -26,7 +26,7 @@ func (h *Handler) SendCode(ctx context.Context, input *SendCodeRequest) (*SendCo
 func (h *Handler) Login(ctx context.Context, input *LoginRequest) (*LoginResponse, error) {
 	token, err := h.service.LoginAndReturnToken(ctx, input.Body.Email, input.Body.Code)
 	if err != nil {
-		return nil, err
+		return nil, toHTTPError(err)
 	}
 
 	return &LoginResponse{Body: LoginResponseBody{Token: token}}, nil

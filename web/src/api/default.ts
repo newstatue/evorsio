@@ -5,23 +5,21 @@
  * OpenAPI spec version: 1.0.0
  */
 import {
-  useQuery
+  useMutation
 } from '@tanstack/react-query';
 import type {
-  DataTag,
-  DefinedInitialDataOptions,
-  DefinedUseQueryResult,
+  MutationFunction,
   QueryClient,
-  QueryFunction,
-  QueryKey,
-  UndefinedInitialDataOptions,
-  UseQueryOptions,
-  UseQueryResult
+  UseMutationOptions,
+  UseMutationResult
 } from '@tanstack/react-query';
 
 import type {
   ErrorModel,
-  Response
+  LoginRequestBody,
+  LoginResponseBody,
+  SendCodeRequestBody,
+  SendCodeResponseBody
 } from './model';
 
 
@@ -36,144 +34,195 @@ export type HTTPStatusCodes = HTTPStatusCode1xx | HTTPStatusCode2xx | HTTPStatus
 
 
 
-const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKey: K } => {
-  const result = { queryKey } as T & { queryKey: K };
-  for (const key of Object.keys(query)) {
-    // The explicit queryKey always wins, matching the previous
-    // `{ ...query, queryKey }` spread where it was set last.
-    if (key === 'queryKey') continue;
-    Object.defineProperty(result, key, {
-      enumerable: true,
-      configurable: true,
-      get: () => (query as Record<string, unknown>)[key],
-    });
-  }
-  return result;
-};
-
-export type getHealthResponse200 = {
-  data: Response
+export type postAuthLoginResponse200 = {
+  data: LoginResponseBody
   status: 200
 }
 
-export type getHealthResponseDefault = {
+export type postAuthLoginResponseDefault = {
   data: ErrorModel
   status: Exclude<HTTPStatusCodes, 200>
 }
 
-export type getHealthResponseSuccess = (getHealthResponse200) & {
+export type postAuthLoginResponseSuccess = (postAuthLoginResponse200) & {
   headers: Headers;
 };
-export type getHealthResponseError = (getHealthResponseDefault) & {
+export type postAuthLoginResponseError = (postAuthLoginResponseDefault) & {
   headers: Headers;
 };
 
-export type getHealthResponse = (getHealthResponseSuccess | getHealthResponseError)
+export type postAuthLoginResponse = (postAuthLoginResponseSuccess | postAuthLoginResponseError)
 
-export const getGetHealthUrl = () => {
-
-
+export const getPostAuthLoginUrl = () => {
 
 
-  return `/api/health`
+
+
+  return `/api/auth/login`
 }
 
 /**
- * @summary Get health
+ * @summary Post auth login
  */
-export const getHealth = async ( options?: RequestInit): Promise<getHealthResponse> => {
+export const postAuthLogin = async (loginRequestBody: LoginRequestBody, options?: RequestInit): Promise<postAuthLoginResponse> => {
 
-  const res = await fetch(getGetHealthUrl(),
+  const res = await fetch(getPostAuthLoginUrl(),
   {
     ...options,
-    method: 'GET'
-
-
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(loginRequestBody)
   }
 )
 
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
 
-  const data: getHealthResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as getHealthResponse
+  const data: postAuthLoginResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as postAuthLoginResponse
 }
 
 
 
 
 
-export const getGetHealthQueryKey = () => {
-    return [
-    `/api/health`
-    ] as const;
-    }
+export const getPostAuthLoginMutationOptions = <TError = ErrorModel,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAuthLogin>>, TError,{data: LoginRequestBody}, TContext>, fetch?: RequestInit}
+): UseMutationOptions<Awaited<ReturnType<typeof postAuthLogin>>, TError,{data: LoginRequestBody}, TContext> => {
 
-
-export const getGetHealthQueryOptions = <TData = Awaited<ReturnType<typeof getHealth>>, TError = ErrorModel>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getHealth>>, TError, TData>>, fetch?: RequestInit}
-) => {
-
-const {query: queryOptions, fetch: fetchOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getGetHealthQueryKey();
-
-
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getHealth>>> = ({ signal }) => getHealth({ signal, ...fetchOptions });
+const mutationKey = ['postAuthLogin'];
+const {mutation: mutationOptions, fetch: fetchOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, fetch: undefined};
 
 
 
 
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postAuthLogin>>, {data: LoginRequestBody}> = (props) => {
+          const {data} = props ?? {};
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getHealth>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type GetHealthQueryResult = NonNullable<Awaited<ReturnType<typeof getHealth>>>
-export type GetHealthQueryError = ErrorModel
+          return  postAuthLogin(data,fetchOptions)
+        }
 
 
-export function useGetHealth<TData = Awaited<ReturnType<typeof getHealth>>, TError = ErrorModel>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getHealth>>, TError, TData>> & Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getHealth>>,
-          TError,
-          Awaited<ReturnType<typeof getHealth>>
-        > , 'initialData'
-      >, fetch?: RequestInit}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetHealth<TData = Awaited<ReturnType<typeof getHealth>>, TError = ErrorModel>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getHealth>>, TError, TData>> & Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getHealth>>,
-          TError,
-          Awaited<ReturnType<typeof getHealth>>
-        > , 'initialData'
-      >, fetch?: RequestInit}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetHealth<TData = Awaited<ReturnType<typeof getHealth>>, TError = ErrorModel>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getHealth>>, TError, TData>>, fetch?: RequestInit}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-/**
- * @summary Get health
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PostAuthLoginMutationResult = NonNullable<Awaited<ReturnType<typeof postAuthLogin>>>
+    export type PostAuthLoginMutationBody = LoginRequestBody
+    export type PostAuthLoginMutationError = ErrorModel
+
+    /**
+ * @summary Post auth login
  */
+export const usePostAuthLogin = <TError = ErrorModel,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAuthLogin>>, TError,{data: LoginRequestBody}, TContext>, fetch?: RequestInit}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof postAuthLogin>>,
+        TError,
+        {data: LoginRequestBody},
+        TContext
+      > => {
+      return useMutation(getPostAuthLoginMutationOptions(options), queryClient);
+    }
+    export type postAuthSendCodeResponse200 = {
+  data: SendCodeResponseBody
+  status: 200
+}
 
-export function useGetHealth<TData = Awaited<ReturnType<typeof getHealth>>, TError = ErrorModel>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getHealth>>, TError, TData>>, fetch?: RequestInit}
- , queryClient?: QueryClient
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+export type postAuthSendCodeResponseDefault = {
+  data: ErrorModel
+  status: Exclude<HTTPStatusCodes, 200>
+}
 
-  const queryOptions = getGetHealthQueryOptions(options)
+export type postAuthSendCodeResponseSuccess = (postAuthSendCodeResponse200) & {
+  headers: Headers;
+};
+export type postAuthSendCodeResponseError = (postAuthSendCodeResponseDefault) & {
+  headers: Headers;
+};
 
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export type postAuthSendCodeResponse = (postAuthSendCodeResponseSuccess | postAuthSendCodeResponseError)
 
-  return withQueryKey(query, queryOptions.queryKey);
+export const getPostAuthSendCodeUrl = () => {
+
+
+
+
+  return `/api/auth/send-code`
+}
+
+/**
+ * @summary Post auth send code
+ */
+export const postAuthSendCode = async (sendCodeRequestBody: SendCodeRequestBody, options?: RequestInit): Promise<postAuthSendCodeResponse> => {
+
+  const res = await fetch(getPostAuthSendCodeUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(sendCodeRequestBody)
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: postAuthSendCodeResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as postAuthSendCodeResponse
 }
 
 
 
 
 
+export const getPostAuthSendCodeMutationOptions = <TError = ErrorModel,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAuthSendCode>>, TError,{data: SendCodeRequestBody}, TContext>, fetch?: RequestInit}
+): UseMutationOptions<Awaited<ReturnType<typeof postAuthSendCode>>, TError,{data: SendCodeRequestBody}, TContext> => {
 
+const mutationKey = ['postAuthSendCode'];
+const {mutation: mutationOptions, fetch: fetchOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, fetch: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postAuthSendCode>>, {data: SendCodeRequestBody}> = (props) => {
+          const {data} = props ?? {};
+
+          return  postAuthSendCode(data,fetchOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PostAuthSendCodeMutationResult = NonNullable<Awaited<ReturnType<typeof postAuthSendCode>>>
+    export type PostAuthSendCodeMutationBody = SendCodeRequestBody
+    export type PostAuthSendCodeMutationError = ErrorModel
+
+    /**
+ * @summary Post auth send code
+ */
+export const usePostAuthSendCode = <TError = ErrorModel,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAuthSendCode>>, TError,{data: SendCodeRequestBody}, TContext>, fetch?: RequestInit}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof postAuthSendCode>>,
+        TError,
+        {data: SendCodeRequestBody},
+        TContext
+      > => {
+      return useMutation(getPostAuthSendCodeMutationOptions(options), queryClient);
+    }
