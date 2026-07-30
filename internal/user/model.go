@@ -24,13 +24,14 @@ type User struct {
 }
 
 func NewUser(email string) *User {
+	now := time.Now().UTC()
 	return &User{
 		ID:        uuid.New(),
 		Email:     email,
 		Name:      defaultName(email),
 		Status:    StatusActive,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		CreatedAt: now,
+		UpdatedAt: now,
 	}
 }
 

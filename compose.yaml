@@ -17,6 +17,27 @@ services:
     volumes:
       - redis_data:/data
 
+  seaweedfs:
+    image: chrislusf/seaweedfs:4.40
+    command:
+      - mini
+      - -dir=/data
+    environment:
+      AWS_ACCESS_KEY_ID: admin
+      AWS_SECRET_ACCESS_KEY: secret
+      S3_BUCKET: evorsio
+    ports:
+      - "8333:8333"
+      - "9333:9333"
+      - "8888:8888"
+      - "7333:7333"
+      - "8080:8080"
+      - "23646:23646"
+    volumes:
+      - seaweedfs_data:/data
+
+
 volumes:
   postgres_data:
   redis_data:
+  seaweedfs_data:

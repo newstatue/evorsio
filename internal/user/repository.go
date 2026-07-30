@@ -11,7 +11,7 @@ import (
 type Repository interface {
 	FindByID(ctx context.Context, id uuid.UUID) (*User, error)
 	FindByEmail(ctx context.Context, email string) (*User, error)
-	Create(ctx context.Context, user *User) (*User, error)
+	Create(ctx context.Context, user *User) error
 }
 
 type PostgresRepository struct {
@@ -71,11 +71,10 @@ func (r *PostgresRepository) FindByEmail(ctx context.Context, email string) (*Us
 	return user, nil
 }
 
-func (r *PostgresRepository) Create(ctx context.Context, user *User) (*User, error) {
+func (r *PostgresRepository) Create(ctx context.Context, user *User) error {
 	const query = `
 	insert into users (id, email, name, status, created_at, updated_at)
 	values ($1, $2, $3, $4, $5, $6)
-	returning id, email, coalesce(name,''), status, created_at, updated_at
     `
 
 	newUser := &User{}
@@ -93,8 +92,8 @@ func (r *PostgresRepository) Create(ctx context.Context, user *User) (*User, err
 	)
 
 	if err != nil {
-		return nil, fmt.Errorf("failed to insert user: %w", err)
+		return fmt.Errorf("failed to insert user: %w", err)
 	}
 
-	return newUser, nil
+	return nil
 }

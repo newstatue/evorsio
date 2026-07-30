@@ -5,23 +5,24 @@ import (
 	"crypto/rand"
 	"database/sql"
 	"errors"
-	"evorsio/internal/platform"
 	"evorsio/internal/platform/config"
 	"evorsio/internal/shared"
 	"evorsio/internal/user"
 	"fmt"
 	"log/slog"
 	"math/big"
+	"time"
 
+	"github.com/go-chi/jwtauth/v5"
 	"github.com/redis/go-redis/v9"
 )
 
 type Service struct {
-	config     *config.Config
-	logger     *slog.Logger
-	cache      *redis.Client
-	userRepo   user.Repository
-	jwtService *platform.JWTService
+	config    *config.Config
+	logger    *slog.Logger
+	cache     *redis.Client
+	userRepo  user.Repository
+	tokenAuth *jwtauth.JWTAuth
 }
 
 func NewService(
@@ -29,14 +30,14 @@ func NewService(
 	logger *slog.Logger,
 	cache *redis.Client,
 	userRepo user.Repository,
-	jwtService *platform.JWTService,
+	tokenAuth *jwtauth.JWTAuth,
 ) *Service {
 	return &Service{
-		config:     config,
-		logger:     logger,
-		cache:      cache,
-		userRepo:   userRepo,
-		jwtService: jwtService,
+		config:    config,
+		logger:    logger,
+		cache:     cache,
+		userRepo:  userRepo,
+		tokenAuth: tokenAuth,
 	}
 }
 
@@ -49,7 +50,7 @@ func (s *Service) SendCode(ctx context.Context, email string) error {
 	code := fmt.Sprintf("%05d", n.Int64())
 	key := shared.KeyAuthCode(email)
 
-	ttl := s.config.App.AuthCodeExpire
+	ttl := s.config.APP.AuthCodeExpire
 
 	if err := s.cache.Set(ctx, key, code, ttl).Err(); err != nil {
 		s.logger.ErrorContext(
@@ -92,31 +93,28 @@ func (s *Service) LoginAndReturnToken(ctx context.Context, email string, code st
 		return "", ErrInvalidCode
 	}
 
-	_, _ = s.cache.Del(ctx, shared.KeyAuthCode(email)).Result()
-
 	userEntity, err := s.userRepo.FindByEmail(ctx, email)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			userEntity, err = s.userRepo.Create(ctx, user.NewUser(email))
-			if err != nil {
-
-				s.logger.ErrorContext(
-					ctx,
-					"failed to create new user",
-					"email", email,
-					"error", err,
-				)
-
-				return "", err
-			}
-		} else {
+		if !errors.Is(err, sql.ErrNoRows) {
 			s.logger.ErrorContext(
 				ctx,
 				"failed to get user by email",
 				"email", email,
 				"error", err,
 			)
-			return "", err
+			return "", fmt.Errorf("failed to get user by email: %w", err)
+		}
+
+		userEntity = user.NewUser(email)
+		err = s.userRepo.Create(ctx, userEntity)
+		if err != nil {
+			s.logger.ErrorContext(
+				ctx,
+				"failed to create new user",
+				"email", email,
+				"error", err,
+			)
+			return "", fmt.Errorf("failed to create new user: %w", err)
 		}
 	}
 
@@ -124,7 +122,15 @@ func (s *Service) LoginAndReturnToken(ctx context.Context, email string, code st
 		return "", ErrUserInactive
 	}
 
-	token, err := s.jwtService.GenerateToken(userEntity.ID.String())
+	now := time.Now()
+
+	_, token, err := s.tokenAuth.Encode(map[string]any{
+		"sub": userEntity.ID.String(),
+		"iss": s.config.JWT.JWTIssuer,
+		"iat": now.Unix(),
+		"nbf": now.Unix(),
+		"exp": now.Add(s.config.JWT.JWTExpire).Unix(),
+	})
 	if err != nil {
 		s.logger.ErrorContext(
 			ctx,
@@ -136,5 +142,15 @@ func (s *Service) LoginAndReturnToken(ctx context.Context, email string, code st
 		return "", err
 	}
 
-	return token, err
+	err = s.cache.Del(ctx, shared.KeyAuthCode(email)).Err()
+	if err != nil {
+		s.logger.ErrorContext(
+			ctx,
+			"failed to delete verification code",
+			"email", email,
+			"error", err,
+		)
+	}
+
+	return token, nil
 }

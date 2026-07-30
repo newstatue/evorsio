@@ -4,7 +4,6 @@ import (
 	"errors"
 	"evorsio/internal/app"
 	"evorsio/internal/auth"
-	"evorsio/internal/platform"
 	"evorsio/internal/platform/cache"
 	"evorsio/internal/platform/config"
 	"evorsio/internal/platform/database"
@@ -16,18 +15,35 @@ import (
 	"github.com/danielgtaylor/huma/v2"
 	"github.com/danielgtaylor/huma/v2/adapters/humachi"
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/jwtauth/v5"
 )
 
 func main() {
 	application := bootstrap()
 	defer application.DB.Close()
 
+	tokenAuth := jwtauth.New(
+		"HS256",
+		[]byte(application.Config.JWT.JWTSecret),
+		nil,
+	)
+
 	rootRouter := chi.NewRouter()
 	apiRouter := chi.NewRouter()
 
+	rootRouter.Use(middleware.RequestID)
+	rootRouter.Use(middleware.Recoverer)
+
+	// 只负责解析 JWT，不会强制所有接口登录。
+	apiRouter.Use(jwtauth.Verifier(tokenAuth))
+
 	rootRouter.Mount("/api", apiRouter)
 
-	humaCfg := huma.DefaultConfig("Evorsio API", "1.0.0")
+	humaCfg := huma.DefaultConfig(
+		"Evorsio API",
+		"1.0.0",
+	)
 	humaCfg.CreateHooks = nil
 	humaCfg.Servers = []*huma.Server{
 		{
@@ -35,20 +51,24 @@ func main() {
 		},
 	}
 
+	humaCfg.Components.SecuritySchemes =
+		map[string]*huma.SecurityScheme{
+			"bearerAuth": {
+				Type:         "http",
+				Scheme:       "bearer",
+				BearerFormat: "JWT",
+			},
+		}
+
 	api := humachi.New(apiRouter, humaCfg)
 
-	jwtService := platform.NewJWTService(
-		application.Config.App.JWTSecret,
-		application.Config.App.JWTIssuer,
-		application.Config.App.JWTExpire,
-	)
 	auth.Register(
 		api,
 		application.Config,
 		application.DB,
 		application.Cache,
 		application.Logger,
-		jwtService,
+		tokenAuth,
 	)
 
 	addr := fmt.Sprintf(
@@ -70,7 +90,7 @@ func main() {
 	if err := server.ListenAndServe(); err != nil &&
 		!errors.Is(err, http.ErrServerClosed) {
 		application.Logger.Error(
-			"failed to start server",
+			"server stopped unexpectedly",
 			"error", err,
 		)
 	}

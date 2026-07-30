@@ -2,12 +2,17 @@ package cache
 
 import (
 	"context"
+	"errors"
+	"strings"
 	"time"
 
 	"github.com/redis/go-redis/v9"
 )
 
 func New(uri string) (*redis.Client, error) {
+	if strings.TrimSpace(uri) == "" {
+		return nil, errors.New("cache empty uri")
+	}
 	opt, err := redis.ParseURL(uri)
 	if err != nil {
 		return nil, err
