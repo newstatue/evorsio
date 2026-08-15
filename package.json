@@ -1,0 +1,19 @@
+{
+  "name": "evorsio",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:web": "bun --filter @evorsio/web dev",
+    "dev:server": "bun --filter @evorsio/server dev",
+    "build:web": "bun --filter @evorsio/web build",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "prettier": "^3.9.6",
+    "prettier-plugin-tailwindcss": "^0.8.1"
+  }
+}
