@@ -1,6 +1,6 @@
 import { Hono } from "hono"
-import { auth } from "@/auth/auth"
+import { auth as authInstance } from "@/auth/auth"
 
-export const authRoutes = new Hono()
+export const auth = new Hono()
 
-authRoutes.on(["POST", "GET"], "/*", (ctx) => auth.handler(ctx.req.raw))
+auth.on(["POST", "GET"], "/*", (ctx) => authInstance.handler(ctx.req.raw))
