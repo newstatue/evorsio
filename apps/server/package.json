@@ -4,9 +4,13 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "dev": "bun run --hot src/index.ts",
+    "dev": "NODE_ENV=development bun run --hot src/index.ts",
+    "prod": "NODE_ENV=production bun run src/index.ts",
+    "build": "bun build src/index.ts --compile --outfile dist/index",
     "auth:generate": "bunx auth generate --config ./src/auth/auth.ts --output ./src/auth/auth-schema.ts",
-    "db:push": "drizzle-kit push"
+    "db:push:dev": "drizzle-kit push --config drizzle.dev.config.ts",
+    "db:migrate:prod": "drizzle-kit migrate --config drizzle.config.ts",
+    "db:generate": "drizzle-kit generate --config drizzle.dev.config.ts"
   },
   "dependencies": {
     "@ai-sdk/openai-compatible": "^3.0.30",
@@ -16,6 +20,7 @@
     "better-auth": "^1.6.29",
     "drizzle-orm": "^0.45.2",
     "hono": "^4.13.2",
+    "pg": "^8.23.0",
     "zod": "^4.4.3"
   },
   "devDependencies": {

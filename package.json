@@ -8,9 +8,10 @@
   "scripts": {
     "dev:web": "bun --filter @evorsio/web dev",
     "dev:server": "bun --filter @evorsio/server dev",
-    "build:web": "bun --filter @evorsio/web build",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "build": "bun --filter @evorsio/web build",
+    "prod": "bun --filter @evorsio/server prod"
   },
   "devDependencies": {
     "prettier": "^3.9.6",
