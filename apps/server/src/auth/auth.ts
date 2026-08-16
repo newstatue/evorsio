@@ -1,11 +1,13 @@
 import { betterAuth } from "better-auth/minimal"
 import { drizzleAdapter } from "better-auth/adapters/drizzle"
+import * as schema from "@/auth/auth-schema"
 import { db } from "@/db"
 import { GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET, WEB_URL } from "@/config"
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: "pg",
+    schema
   }),
   emailAndPassword: {
     enabled: true,
