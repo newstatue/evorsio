@@ -3,10 +3,14 @@ kind: Ingress
 metadata:
   name: evorsio
   annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-production
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
-    traefik.ingress.kubernetes.io/router.tls: "true"
 spec:
   ingressClassName: traefik
+  tls:
+    - hosts:
+        - evorsio.com
+      secretName: evorsio-tls
   rules:
     - host: evorsio.com
       http:

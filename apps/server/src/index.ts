@@ -9,13 +9,19 @@ api.route("/auth", auth)
 const app = new Hono()
 app.use(logger())
 
-app.use("/*", serveStatic({
-  root: "../web/dist"
-}))
-app.get("/*",serveStatic({
-  root: "../web/dist",
-  path: "index.html",
-}))
+app.use(
+  "/*",
+  serveStatic({
+    root: "../web/dist",
+  })
+)
+app.get(
+  "/*",
+  serveStatic({
+    root: "../web/dist",
+    path: "index.html",
+  })
+)
 app.route("/api", api)
 
 console.log("cwd:", process.cwd())

@@ -5,7 +5,7 @@ export const NODE_ENV = process.env.NODE_ENV ?? PRODUCTION
 export const IS_DEVELOPMENT = NODE_ENV === DEVELOPMENT
 
 export const PORT = IS_DEVELOPMENT ? "" : requiredEnv("PORT")
-export const DATABASE_URL = IS_DEVELOPMENT ? "": requiredEnv("DATABASE_URL")
+export const DATABASE_URL = IS_DEVELOPMENT ? "" : requiredEnv("DATABASE_URL")
 
 export const WEB_URL = requiredEnv("WEB_URL")
 export const BETTER_AUTH_URL = requiredEnv("BETTER_AUTH_URL")
