@@ -24,6 +24,7 @@ export function RegisterForm({ className, ...props }: ComponentProps<"div">) {
     }
 
     const { data, error } = await authClient.signUp.email({
+      image: `https://api.dicebear.com/10.x/waves/svg?seed=${crypto.randomUUID()}`,
       name: email.split("@")[0],
       email,
       password,
