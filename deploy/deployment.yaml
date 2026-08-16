@@ -15,5 +15,8 @@ spec:
       containers:
         - name: evorsio
           image: ghcr.io/newstatue/evorsio:v0.0.1
+          envFrom:
+            - secretRef:
+                name: evorsio-secret
           ports:
             - containerPort: 8080
