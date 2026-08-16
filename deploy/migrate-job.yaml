@@ -19,4 +19,4 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: evorsio-secret
-                  key: database-url
+                  key: DATABASE_URL
