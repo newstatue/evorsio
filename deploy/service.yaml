@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: evorsio
+spec:
+  selector:
+    app: evorsio
+  ports:
+    - port: 80
+      targetPort: 8080

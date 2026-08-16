@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: evorsio
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: evorsio
+  template:
+    metadata:
+      labels:
+        app: evorsio
+    spec:
+      containers:
+        - name: evorsio
+          image: ghcr.io/newstatue/evorsio:latest
+          ports:
+            - containerPort: 8080

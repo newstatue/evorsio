@@ -11,7 +11,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "build": "bun --filter @evorsio/web build",
-    "prod": "bun --filter @evorsio/server prod"
+    "prod": "bun --filter @evorsio/server prod",
+    "db:migrate": "bun --filter @evorsio/server db:migrate:prod"
   },
   "devDependencies": {
     "prettier": "^3.9.6",
