@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
         - name: evorsio
-          image: ghcr.io/newstatue/evorsio:latest
+          image: ghcr.io/newstatue/evorsio:sha-c6c39b2cea35869320feeacec4b58904b486dafc
           ports:
             - containerPort: 8080
