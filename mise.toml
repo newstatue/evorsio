@@ -4,20 +4,34 @@ node = "24.18.0"
 npm = "latest"
 sqlc = "1.31.1"
 
+[env]
+ENVIRONMENT = "prod"
+MACOSX_DEPLOYMENT_TARGET="13.0"
+CGO_CFLAGS="-mmacosx-version-min=13.0"
+CGO_CXXFLAGS="-mmacosx-version-min=13.0"
+CGO_LDFLAGS="-mmacosx-version-min=13.0"
 
 [tasks.dev-app]
 description = "开发 APP"
 run = "go run ./cmd/app"
-env = {
-    ENVIRONMENT = "dev"
-}
+env = { ENVIRONMENT = "dev" }
 
 [tasks.dev-api]
 description = "开发 API"
 run = "go run ./cmd/api"
 env = {
-    ENVIRONMENT = "dev"
+    ENVIRONMENT = "dev",
+    NAME = "evo",
+    VERSION = "0.0.1",
+    DSN = "abc"
 }
 
-[env]
-ENVIRONMENT = "prod"
+[tasks.build-web]
+description = "构建 WEB"
+dir = "web"
+run = "npm run build"
+
+[tasks.test]
+description = "运行所有 TEST"
+run = "go test ./..."
+
