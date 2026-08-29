@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/newstatue/evorsio"
-	"github.com/newstatue/evorsio/internal"
+	"github.com/newstatue/evorsio/internal/drive"
 	"github.com/wailsapp/wails/v3/pkg/application"
 )
 
@@ -18,7 +18,7 @@ func main() {
 		Name:        "app",
 		Description: "A demo of using raw HTML & CSS",
 		Services: []application.Service{
-			application.NewService(&internal.GreetService{}),
+			application.NewService(&drive.GreetService{}),
 		},
 		Assets: application.AssetOptions{
 			Handler: application.AssetFileServerFS(evorsio.Assets),

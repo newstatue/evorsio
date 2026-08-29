@@ -1,4 +1,4 @@
-package internal
+package drive
 
 type GreetService struct{}
 
