@@ -24,7 +24,7 @@ type AppConfig struct {
 }
 
 type HTTPConfig struct {
-	Port string `env:"PORT" envDefault:"8080"`
+	Addr string `env:"ADDR" envDefault:":8080"`
 }
 
 type DBConfig struct {

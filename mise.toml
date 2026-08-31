@@ -15,6 +15,7 @@ CGO_LDFLAGS="-mmacosx-version-min=13.0"
 description = "开发 APP"
 run = "go run ./cmd/app"
 env = { ENVIRONMENT = "dev" }
+raw = true
 
 [tasks.dev-api]
 description = "开发 API"
@@ -23,8 +24,17 @@ env = {
     ENVIRONMENT = "dev",
     NAME = "evo",
     VERSION = "0.0.1",
-    DSN = "abc"
+    DSN = "file:./tmp/data.sqlite"
 }
+raw = true
+
+[tasks.build-api]
+description = "构建 API"
+run = "go build -trimpath -ldflags='-s -w' -o ./tmp ./cmd/api"
+env = {
+    CGO_ENABLED = 0,
+}
+raw = true
 
 [tasks.build-web]
 description = "构建 WEB"
