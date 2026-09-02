@@ -45,3 +45,6 @@ run = "npm run build"
 description = "运行所有 TEST"
 run = "go test ./..."
 
+[tasks.gen-sqlc]
+description = "生成 sqlc 代码"
+run = "sqlc generate -f db/sqlc.yml"
