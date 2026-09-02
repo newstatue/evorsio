@@ -1,25 +1,45 @@
 package main
 
 import (
-	"log"
+	"database/sql"
+	"log/slog"
+	"os"
 	"time"
 
+	"github.com/lmittmann/tint"
+	"github.com/mattn/go-colorable"
 	"github.com/newstatue/evorsio"
-	"github.com/newstatue/evorsio/internal/drive"
+	"github.com/newstatue/evorsio/internal/common"
 	"github.com/wailsapp/wails/v3/pkg/application"
+	_ "modernc.org/sqlite"
 )
 
-func init() {
-	application.RegisterEvent[string]("time")
-}
-
 func main() {
+	l := slog.New(tint.NewTextHandler(colorable.NewColorable(os.Stderr), &tint.Options{
+		Level:      slog.LevelInfo,
+		TimeFormat: time.Kitchen,
+	}))
+	slog.SetDefault(l)
+	cfg, err := common.NewConfig()
+	if err != nil {
+		l.Error("配置出错", "error", err)
+		return
+	}
+
+	db, err := sql.Open("sqlite", cfg.DB.DSN)
+	if err != nil {
+		l.Error("数据库初始化失败", "error", err)
+		return
+	}
+	defer func(db *sql.DB) {
+		_ = db.Close()
+	}(db)
+
 	app := application.New(application.Options{
 		Name:        "app",
 		Description: "A demo of using raw HTML & CSS",
-		Services: []application.Service{
-			application.NewService(&drive.GreetService{}),
-		},
+		Logger:      l,
+		Services:    []application.Service{},
 		Assets: application.AssetOptions{
 			Handler: application.AssetFileServerFS(evorsio.Assets),
 		},
@@ -41,17 +61,15 @@ func main() {
 		URL:              "/",
 	})
 
-	go func() {
-		for {
-			now := time.Now().Format(time.RFC1123)
-			app.Event.Emit("time", now)
-			time.Sleep(time.Second)
-		}
-	}()
-
-	err := app.Run()
-
-	if err != nil {
-		log.Fatal(err)
+	if err := db.PingContext(app.Context()); err != nil {
+		l.ErrorContext(app.Context(), "数据库连接失败", "error", err)
+		return
 	}
+
+	if err := app.Run(); err != nil {
+		l.Error("APP 退出异常", "error", err)
+		return
+	}
+
+	l.Info("APP 正常退出")
 }
