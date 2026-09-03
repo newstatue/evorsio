@@ -51,8 +51,10 @@ function RouteComponent() {
                     </SidebarMenu>
                 </SidebarFooter>
             </Sidebar>
-            <main>
-                <Outlet/>
+            <main className="flex-1 p-6">
+                <div className="mx-auto w-full max-w-7xl">
+                    <Outlet />
+                </div>
             </main>
         </SidebarProvider>
     )

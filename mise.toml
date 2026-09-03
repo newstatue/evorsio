@@ -23,6 +23,15 @@ env = {
 raw = true
 
 
+[tasks.dev-web]
+description = "开发 APP"
+run = "npm --prefix ./web run dev"
+env = {
+}
+raw = true
+
+
+
 [tasks.build-web]
 description = "构建 WEB"
 dir = "web"
@@ -35,3 +44,7 @@ run = "go test ./..."
 [tasks.gen-sqlc]
 description = "生成 sqlc 代码"
 run = "sqlc generate -f db/sqlc.yml"
+
+[tasks.gen-types]
+description = "生成 Wails Bindings 代码"
+run = "wails3 generate bindings -ts -i -d ./web/src/types ./cmd/app"
