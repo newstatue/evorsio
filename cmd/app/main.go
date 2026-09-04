@@ -17,7 +17,7 @@ import (
 func main() {
 	l := slog.New(tint.NewTextHandler(colorable.NewColorable(os.Stderr), &tint.Options{
 		Level:      slog.LevelInfo,
-		TimeFormat: time.Kitchen,
+		TimeFormat: time.RFC3339Nano,
 	}))
 	slog.SetDefault(l)
 	cfg, err := common.NewConfig()

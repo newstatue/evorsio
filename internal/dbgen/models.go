@@ -2,7 +2,11 @@
 // versions:
 //   sqlc v1.31.1
 
-package db
+package dbgen
+
+import (
+	"time"
+)
 
 type Entry struct {
 	ParentID string
@@ -19,8 +23,8 @@ type Resource struct {
 	ID        string
 	Type      string
 	Name      string
-	CreatedAt string
-	UpdatedAt string
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 type Symlink struct {

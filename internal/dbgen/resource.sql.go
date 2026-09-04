@@ -3,12 +3,13 @@
 //   sqlc v1.31.1
 // source: resource.sql
 
-package db
+package dbgen
 
 import (
 	"context"
 	"database/sql"
 	"strings"
+	"time"
 )
 
 const deleteResourceById = `-- name: DeleteResourceById :execresult
@@ -45,8 +46,8 @@ type InsertResourceParams struct {
 	ID        string
 	Type      string
 	Name      string
-	CreatedAt string
-	UpdatedAt string
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 func (q *Queries) InsertResource(ctx context.Context, arg InsertResourceParams) error {
@@ -116,7 +117,7 @@ update resource set name = coalesce(?3,name), updated_at = ? where id = ?
 
 type UpdateResourceByIdParams struct {
 	Name      sql.NullString
-	UpdatedAt string
+	UpdatedAt time.Time
 	ID        string
 }
 
