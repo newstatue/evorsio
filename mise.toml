@@ -30,12 +30,10 @@ env = {
 }
 raw = true
 
-
-
 [tasks.build-web]
 description = "构建 WEB"
 dir = "web"
-run = "npm run build"
+run = "npm i && npm run build"
 
 [tasks.test]
 description = "运行所有 TEST"

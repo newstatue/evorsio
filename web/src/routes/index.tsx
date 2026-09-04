@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import {Button} from "@/components/ui/button.tsx";
 
 export const Route = createFileRoute('/')({
@@ -18,6 +18,7 @@ function RouteComponent() {
           <div className="font-mono text-xs text-muted-foreground">
             (Press <kbd>d</kbd> to toggle dark mode)
           </div>
+          <Link to="/dash/drive"/>
         </div>
       </div>
   )
