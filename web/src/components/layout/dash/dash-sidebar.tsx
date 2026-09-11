@@ -16,11 +16,15 @@ import {
 } from "@/components/ui/sidebar.tsx"
 import { Link } from "@tanstack/react-router"
 import { HardDrive, User, Lock } from "lucide-react"
+import { Button } from "@/components/ui/button.tsx"
 
 export function DashSidebar() {
   return (
     <Sidebar variant="sidebar" collapsible="offcanvas" className="z-20">
-      <SidebarHeader />
+      <div className="h-(--header-height)"/>
+      <SidebarHeader>
+        <Button/>
+      </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>应用</SidebarGroupLabel>

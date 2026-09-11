@@ -9,13 +9,17 @@ export const Route = createFileRoute("/dash")({
 })
 
 function RouteComponent() {
-  const sidebarStyle = { "--sidebar": "transparent" } as CSSProperties
+  const sidebarStyle = {
+    "--sidebar": "transparent",
+    "--header-height": "3.35rem",
+  } as CSSProperties
+
   return (
     <SidebarProvider style={sidebarStyle}>
       <DashHeader />
-      <SidebarInset className="flex min-h-svh">
-        <DashSidebar />
-        <main className="flex flex-1 flex-col bg-background p-2">
+      <DashSidebar />
+      <SidebarInset className="min-h-0 flex-1 bg-background pt-(--header-height)">
+        <main className="flex flex-1 flex-col p-2">
           <div className="mx-auto w-full max-w-7xl">
             <Outlet />
           </div>

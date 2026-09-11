@@ -20,37 +20,39 @@ export function DashHeader() {
     (match) => match.staticData?.breadcrumb
   )
   return (
-    <header className="flex h-10 items-center gap-2 bg-background p-2">
+    <header className="fixed inset-x-0 top-0 z-10 flex h-(--header-height) items-center p-2">
       <div
         className={cn(
-          "shrink-0 transition-[width] duration-200 ease-linear",
-          open && !isMobile ? "w-(--sidebar-width)" : "w-0"
+          "shrink-0 bg-transparent transition-[width] duration-200 ease-linear",
+          open && !isMobile ? "w-(--sidebar-width)" : "w-22",
         )}
       />
-      <SidebarTrigger size="icon" />
-      <Separator orientation="vertical" />
-      <Breadcrumb>
-        <BreadcrumbList>
-          {breadcrumbMatches.map((match, index) => {
-            const isLast = index === breadcrumbMatches.length - 1
-            const label = match.staticData!.breadcrumb as string
-            return (
-              <Fragment key={match.id}>
-                {index > 0 && <BreadcrumbSeparator />}
-                <BreadcrumbItem>
-                  {isLast ? (
-                    <BreadcrumbPage>{label}</BreadcrumbPage>
-                  ) : (
-                    <BreadcrumbLink render={<Link to={match.pathname} />}>
-                      {label}
-                    </BreadcrumbLink>
-                  )}
-                </BreadcrumbItem>
-              </Fragment>
-            )
-          })}
-        </BreadcrumbList>
-      </Breadcrumb>
+      <div className="flex h-full min-w-0 flex-1 items-center gap-2 bg-background">
+        <SidebarTrigger />
+        <Separator orientation="vertical" />
+        <Breadcrumb>
+          <BreadcrumbList>
+            {breadcrumbMatches.map((match, index) => {
+              const isLast = index === breadcrumbMatches.length - 1
+              const label = match.staticData!.breadcrumb as string
+              return (
+                <Fragment key={match.id}>
+                  {index > 0 && <BreadcrumbSeparator />}
+                  <BreadcrumbItem>
+                    {isLast ? (
+                      <BreadcrumbPage>{label}</BreadcrumbPage>
+                    ) : (
+                      <BreadcrumbLink render={<Link to={match.pathname} />}>
+                        {label}
+                      </BreadcrumbLink>
+                    )}
+                  </BreadcrumbItem>
+                </Fragment>
+              )
+            })}
+          </BreadcrumbList>
+        </Breadcrumb>
+      </div>
     </header>
   )
 }

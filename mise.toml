@@ -21,6 +21,7 @@ run_windows = "go run -tags %ENVIRONMENT% ./cmd/app"
 raw = true
 [tasks.dev-app.env]
 ENVIRONMENT = "dev"
+FRONTEND_DEVSERVER_URL = "http://127.0.0.1:5173"
 NAME = "evo"
 VERSION = "0.0.1"
 DSN = "file:./tmp/data.sqlite"
