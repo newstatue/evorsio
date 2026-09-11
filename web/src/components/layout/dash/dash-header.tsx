@@ -28,7 +28,7 @@ export function DashHeader() {
         )}
       />
       <div className="flex h-full min-w-0 flex-1 items-center gap-2 bg-background">
-        <SidebarTrigger />
+        <SidebarTrigger size="icon" />
         <Separator orientation="vertical" />
         <Breadcrumb>
           <BreadcrumbList>
