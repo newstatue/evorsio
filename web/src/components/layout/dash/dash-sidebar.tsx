@@ -17,13 +17,15 @@ import {
 import { Link } from "@tanstack/react-router"
 import { HardDrive, User, Lock } from "lucide-react"
 import { Button } from "@/components/ui/button.tsx"
+import { cn } from "cn"
+import { System } from "@wailsio/runtime"
 
 export function DashSidebar() {
   return (
     <Sidebar variant="sidebar" collapsible="offcanvas" className="z-20">
-      <div className="h-(--header-height)"/>
+      <div className={cn(System.IsMac() ? "h-(--header-height)" : "h-0")} />
       <SidebarHeader>
-        <Button/>
+        <Button />
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>

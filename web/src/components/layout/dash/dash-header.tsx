@@ -11,6 +11,7 @@ import {
 import { Separator } from "@/components/ui/separator.tsx"
 import { Fragment } from "react"
 import { cn } from "cn"
+import { System } from "@wailsio/runtime"
 
 export function DashHeader() {
   const { open, isMobile } = useSidebar()
@@ -24,7 +25,11 @@ export function DashHeader() {
       <div
         className={cn(
           "shrink-0 bg-transparent transition-[width] duration-200 ease-linear",
-          open && !isMobile ? "w-(--sidebar-width)" : "w-22",
+          open && !isMobile
+            ? "w-(--sidebar-width)"
+            : System.IsMac()
+              ? "w-(--header-macos-pd)"
+              : "w-0"
         )}
       />
       <div className="flex h-full min-w-0 flex-1 items-center gap-2 bg-background">

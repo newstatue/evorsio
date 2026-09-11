@@ -12,15 +12,16 @@ function RouteComponent() {
   const sidebarStyle = {
     "--sidebar": "transparent",
     "--header-height": "3.35rem",
+    "--header-macos-pd": "5.5rem",
   } as CSSProperties
 
   return (
-    <SidebarProvider style={sidebarStyle}>
+    <SidebarProvider style={sidebarStyle} className="h-svh overflow-hidden">
       <DashHeader />
       <DashSidebar />
       <SidebarInset className="min-h-0 flex-1 bg-background pt-(--header-height)">
-        <main className="flex flex-1 flex-col p-2">
-          <div className="mx-auto w-full max-w-7xl">
+        <main className="flex flex-1 flex-col overflow-y-auto p-2">
+          <div className="mx-auto w-5/6 max-w-2xl">
             <Outlet />
           </div>
         </main>
