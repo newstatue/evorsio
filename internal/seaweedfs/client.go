@@ -28,7 +28,7 @@ func NewClient(addr string) *Client {
 }
 
 func (c *Client) Close() error {
-	if c.conn != nil {
+	if c.conn == nil {
 		return nil
 	}
 	return c.conn.Close()

@@ -1,14 +1,11 @@
 package drive
 
 import (
-	"io/fs"
-
 	"github.com/newstatue/evorsio/internal/resource"
 )
 
 type File struct {
 	resource.Resource
-	fs.File
 
 	Size     int64
 	MimeType string
