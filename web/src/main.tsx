@@ -3,7 +3,7 @@ import { createRoot } from "react-dom/client"
 
 import "./index.css"
 import "./windows.css"
-import { ThemeProvider } from "@/components/theme-provider.tsx"
+import {ThemeProvider} from "@/components/theme-provider.tsx"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import {
   createHashHistory,
@@ -38,6 +38,12 @@ declare module "@tanstack/react-router" {
     icon?: LucideIcon
   }
 }
+
+import { Events } from "@wailsio/runtime"
+
+Events.On("common:ThemeChanged", (event) => {
+  console.log(event.data)
+})
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

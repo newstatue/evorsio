@@ -13,7 +13,7 @@ function RouteComponent() {
     const isWindows = System.IsWindows()
 
     const sidebarStyle = {
-        "--header-height": "3.5rem",
+        "--header-height": "3.75rem",
         "--header-macos-pd": "5.5rem",
         ...(!isWindows ? { "--sidebar": "transparent" } : {}),
     } as CSSProperties

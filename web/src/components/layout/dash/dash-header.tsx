@@ -29,7 +29,7 @@ export function DashHeader() {
                     ? "w-(--sidebar-width)" : System.IsMac() ? "w-(--header-macos-pd)" : "w-0"
             )}
         />
-        <div className={cn("flex h-full min-w-0 flex-1 items-center gap-2 p-2", !open && !isMobile && "px-4")}>
+        <div className={cn("flex h-full min-w-0 flex-1 items-center gap-2 p-2 transition-[padding]", !open && !isMobile && "px-4")}>
           <SidebarTrigger size="icon" />
           <Separator orientation="vertical" />
           <Breadcrumb>

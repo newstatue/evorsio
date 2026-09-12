@@ -34,13 +34,14 @@ description = "部署 APP"
 run = "go run -tags ${ENVIRONMENT} ./cmd/app"
 run_windows = "go run -tags %ENVIRONMENT% ./cmd/app"
 raw = true
+
 [tasks.prod-app.env]
-ENVIRONMENT = "prod"
 NAME = "evo"
 VERSION = "0.0.1"
 DSN = "file:./tmp/data.sqlite"
 FS_PATH = "./tmp/weed"
 FS_DATA_DIR = "./tmp/weed-data"
+FS_ADDR = "127.0.0.1:18888"
 
 [tasks.dev-web]
 description = "开发 APP"
