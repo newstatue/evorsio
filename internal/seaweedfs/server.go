@@ -4,19 +4,23 @@ import (
 	"bufio"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"log/slog"
 	"os"
 	"os/exec"
+	"runtime"
 	"sync"
+	"time"
 )
 
 type Server struct {
 	mu sync.Mutex
 
-	cmd *exec.Cmd
-	l   *slog.Logger
+	cmd  *exec.Cmd
+	done chan struct{}
+	l    *slog.Logger
 }
 
 func NewServer(l *slog.Logger) *Server {
@@ -50,10 +54,13 @@ func (s *Server) Start(ctx context.Context, path string, dataDir string) error {
 	}
 
 	s.cmd = cmd
+	done := make(chan struct{})
+	s.done = done
 
 	go pipeLog(ctx, s.l, stdout)
 	go pipeLog(ctx, s.l, stderr)
 	go func() {
+		defer close(done)
 		err := cmd.Wait()
 		s.mu.Lock()
 		defer s.mu.Unlock()
@@ -70,13 +77,34 @@ func (s *Server) Start(ctx context.Context, path string, dataDir string) error {
 
 func (s *Server) Stop() error {
 	s.mu.Lock()
-	defer s.mu.Unlock()
 
 	if s.cmd == nil || s.cmd.Process == nil {
+		s.mu.Unlock()
 		return nil
 	}
 
-	return s.cmd.Process.Signal(os.Interrupt)
+	process, done := s.cmd.Process, s.done
+	s.mu.Unlock()
+
+	var err error
+	if runtime.GOOS == "windows" {
+		err = process.Kill()
+	} else {
+		err = process.Signal(os.Interrupt)
+	}
+	if err != nil && !errors.Is(err, os.ErrProcessDone) {
+		return err
+	}
+	select {
+	case <-done:
+		return nil
+	case <-time.After(5 * time.Second):
+		if err := process.Kill(); err != nil && !errors.Is(err, os.ErrProcessDone) {
+			return err
+		}
+		<-done
+		return nil
+	}
 }
 
 func (s *Server) Running() bool {

@@ -39,8 +39,11 @@ func main() {
 		l.Error("数据库初始化失败", kErr, err)
 		return
 	}
-
 	fs := seaweedfs.New(&cfg.FS, l.With(kComponent, vComponentFS))
+	defer func(db *sql.DB, fs *seaweedfs.SeaweedFS) {
+		_ = db.Close()
+		_ = fs.Close()
+	}(db, fs)
 
 	app := application.New(application.Options{
 		Name:        "app",
@@ -54,17 +57,21 @@ func main() {
 			ApplicationShouldTerminateAfterLastWindowClosed: true,
 		},
 	})
+	menu := app.NewMenu()
+
+	fileMenu := menu.AddSubmenu("文件")
+	fileMenu.Add("打开")
+	fileMenu.Add("退出")
+
+	app.Menu.Set(menu)
 
 	app.Window.NewWithOptions(application.WebviewWindowOptions{
-		Title:  "Window 1",
-		Width:  1000,
-		Height: 618,
-		Mac: application.MacWindow{
-			InvisibleTitleBarHeight: 50,
-			Backdrop:                application.MacBackdropTranslucent,
-			TitleBar:                application.MacTitleBarHiddenInset,
-		},
-		URL: "/",
+		Title:   "Evorsio",
+		Width:   1000,
+		Height:  618,
+		Windows: WindowsWindow,
+		Mac:     MacWindow,
+		URL:     "/",
 	})
 
 	app.OnShutdown(func() {
