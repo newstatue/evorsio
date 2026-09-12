@@ -18,43 +18,51 @@ export function DashHeader() {
 
   const matches = useMatches()
   const breadcrumbMatches = matches.filter(
-      (match) => match.staticData?.breadcrumb
+    (match) => match.staticData?.breadcrumb
   )
   return (
-      <header className="fixed inset-x-0 top-(--titlebar-height)  h-(--header-height) z-10 flex items-center py-2 [--wails-draggable:drag] select-none">
-        <div
-            className={cn(
-                "shrink-0 bg-transparent transition-[width] duration-200 ease-linear",
-                open && !isMobile
-                    ? "w-(--sidebar-width)" : System.IsMac() ? "w-(--header-macos-pd)" : "w-0"
-            )}
-        />
-        <div className={cn("flex h-full min-w-0 flex-1 items-center gap-2 p-2 transition-[padding]", !open && !isMobile && "px-4")}>
-          <SidebarTrigger size="icon" className="[--wails-draggable:no-drag]" />
-          <Separator orientation="vertical" />
-          <Breadcrumb>
-            <BreadcrumbList>
-              {breadcrumbMatches.map((match, index) => {
-                const isLast = index === breadcrumbMatches.length - 1
-                const label = match.staticData!.breadcrumb as string
-                return (
-                    <Fragment key={match.id}>
-                      {index > 0 && <BreadcrumbSeparator />}
-                      <BreadcrumbItem className="[--wails-draggable:no-drag]">
-                        {isLast ? (
-                            <BreadcrumbPage>{label}</BreadcrumbPage>
-                        ) : (
-                            <BreadcrumbLink render={<Link to={match.pathname} />}>
-                              {label}
-                            </BreadcrumbLink>
-                        )}
-                      </BreadcrumbItem>
-                    </Fragment>
-                )
-              })}
-            </BreadcrumbList>
-          </Breadcrumb>
-        </div>
-      </header>
+    <header className="fixed inset-x-0 top-(--titlebar-height) z-10 flex h-(--header-height) items-center py-2 select-none [--wails-draggable:drag]">
+      <div
+        className={cn(
+          "shrink-0 bg-transparent transition-[width] duration-200 ease-linear",
+          open && !isMobile
+            ? "w-(--sidebar-width)"
+            : System.IsMac()
+              ? "w-(--header-macos-pd)"
+              : "w-0"
+        )}
+      />
+      <div
+        className={cn(
+          "flex h-full min-w-0 flex-1 items-center gap-2 p-2 transition-[padding]",
+          !open && !isMobile && "px-4"
+        )}
+      >
+        <SidebarTrigger size="icon" className="[--wails-draggable:no-drag]" />
+        <Separator orientation="vertical" />
+        <Breadcrumb>
+          <BreadcrumbList>
+            {breadcrumbMatches.map((match, index) => {
+              const isLast = index === breadcrumbMatches.length - 1
+              const label = match.staticData!.breadcrumb as string
+              return (
+                <Fragment key={match.id}>
+                  {index > 0 && <BreadcrumbSeparator />}
+                  <BreadcrumbItem className="[--wails-draggable:no-drag]">
+                    {isLast ? (
+                      <BreadcrumbPage>{label}</BreadcrumbPage>
+                    ) : (
+                      <BreadcrumbLink render={<Link to={match.pathname} />}>
+                        {label}
+                      </BreadcrumbLink>
+                    )}
+                  </BreadcrumbItem>
+                </Fragment>
+              )
+            })}
+          </BreadcrumbList>
+        </Breadcrumb>
+      </div>
+    </header>
   )
 }
