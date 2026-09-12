@@ -21,7 +21,7 @@ export function DashHeader() {
       (match) => match.staticData?.breadcrumb
   )
   return (
-      <header className=" fixed inset-x-0 top-0 z-10 flex h-(--header-height) items-center py-2">
+      <header className="fixed inset-x-0 top-(--titlebar-height)  h-(--header-height) z-10 flex items-center py-2 [--wails-draggable:drag] select-none">
         <div
             className={cn(
                 "shrink-0 bg-transparent transition-[width] duration-200 ease-linear",
@@ -30,7 +30,7 @@ export function DashHeader() {
             )}
         />
         <div className={cn("flex h-full min-w-0 flex-1 items-center gap-2 p-2 transition-[padding]", !open && !isMobile && "px-4")}>
-          <SidebarTrigger size="icon" />
+          <SidebarTrigger size="icon" className="[--wails-draggable:no-drag]" />
           <Separator orientation="vertical" />
           <Breadcrumb>
             <BreadcrumbList>
@@ -40,7 +40,7 @@ export function DashHeader() {
                 return (
                     <Fragment key={match.id}>
                       {index > 0 && <BreadcrumbSeparator />}
-                      <BreadcrumbItem>
+                      <BreadcrumbItem className="[--wails-draggable:no-drag]">
                         {isLast ? (
                             <BreadcrumbPage>{label}</BreadcrumbPage>
                         ) : (

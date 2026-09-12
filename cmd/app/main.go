@@ -65,14 +65,7 @@ func main() {
 
 	app.Menu.Set(menu)
 
-	app.Window.NewWithOptions(application.WebviewWindowOptions{
-		Title:   "Evorsio",
-		Width:   1000,
-		Height:  618,
-		Windows: WindowsWindow,
-		Mac:     MacWindow,
-		URL:     "/",
-	})
+	app.Window.NewWithOptions(windowOpt)
 
 	app.OnShutdown(func() {
 		_ = db.Close()

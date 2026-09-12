@@ -14,19 +14,17 @@ import {
     SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { Link } from "@tanstack/react-router"
-import {HardDrive, User, Lock, Menu} from "lucide-react"
+import {HardDrive, User, Lock} from "lucide-react"
 import { cn } from "cn"
 import { System } from "@wailsio/runtime"
-import {Button} from "@/components/ui/button";
 
 export function DashSidebar() {
     const variant = System.IsWindows() ? "inset" : "sidebar"
     return (
-        <Sidebar variant={variant} collapsible="offcanvas" className="z-20">
+        <Sidebar variant={variant} collapsible="offcanvas" className="top-(--titlebar-height) z-20 h-[calc(100svh-var(--titlebar-height))] select-none">
             <div className={cn(System.IsMac() ? "h-(--header-height)" : "h-0")} />
             <SidebarHeader>
-
-                {System.IsWindows() &&<Button size="icon" variant="ghost"><Menu/></Button> }
+               <span>Evorsio</span>
             </SidebarHeader>
             <SidebarContent>
                 <SidebarGroup>
