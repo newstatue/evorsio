@@ -1,5 +1,6 @@
 .idea
-web/dist
-web/node_modules
-tmp
-web/.tanstack
+frontend/dist
+frontend/node_modules
+bin
+frontend/.tanstack
+.task

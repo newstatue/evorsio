@@ -20,9 +20,8 @@ type Config struct {
 }
 
 type AppConfig struct {
-	Environment string `env:"ENVIRONMENT" envDefault:"dev"`
-	Name        string `env:"NAME" envDefault:"evorsio"`
-	Version     string `env:"VERSION"`
+	Name    string `env:"NAME" envDefault:"evorsio"`
+	Version string `env:"VERSION"`
 }
 
 type HTTPConfig struct {

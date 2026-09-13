@@ -1,0 +1,47 @@
+version: '3'
+
+includes:
+  common: ./build/Taskfile.yml
+  windows: ./build/windows/Taskfile.yml
+  darwin: ./build/darwin/Taskfile.yml
+  linux: ./build/linux/Taskfile.yml
+
+vars:
+  APP_NAME: "myproject"
+  BIN_DIR: "bin"
+  PACKAGE_MANAGER: "npm"
+  VITE_PORT: '{{.WAILS_VITE_PORT | default 9245}}'
+
+env:
+  ENVIRONMENT: "dev"
+  NAME: "evo"
+  VERSION: "0.0.1"
+  DSN: "file:./bin/data.sqlite"
+  FS_PATH: "./bin/weed"
+  FS_DATA_DIR: "./bin/weed-data"
+  FS_ADDR: "127.0.0.1:18888"
+
+tasks:
+  build:
+    summary: Builds the application
+    cmds:
+      - task: "{{OS}}:build"
+        vars:
+          DEV: "{{.DEV}}"
+          EXTRA_TAGS: '{{if eq .DEV "true"}}dev{{else}}prod{{end}}'
+
+  package:
+    summary: Packages a production build of the application
+    cmds:
+      - task: "{{OS}}:package"
+
+  run:
+    summary: Runs the application
+    cmds:
+      - task: "{{OS}}:run"
+
+  dev:
+    summary: Runs the application in development mode
+    cmds:
+      - wails3 dev -config ./build/config.yml -port {{.VITE_PORT}}
+

@@ -29,7 +29,7 @@ func main() {
 
 	src := filepath.Join(dir, srcName)
 
-	dstDir := filepath.Join(constant.BuildDirTMP)
+	dstDir := filepath.Join(constant.BuildDir)
 
 	dst := filepath.Join(dstDir, dstName)
 

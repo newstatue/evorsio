@@ -1,6 +1,6 @@
 package constant
 
-const BuildDirTMP = "tmp"
+const BuildDir = "bin"
 
 type Component string
 
