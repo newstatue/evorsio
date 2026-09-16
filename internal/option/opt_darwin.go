@@ -11,6 +11,5 @@ var WindowOpt = application.WebviewWindowOptions{
 		Backdrop:                application.MacBackdropTranslucent,
 		TitleBar:                application.MacTitleBarHiddenInset,
 	},
-	Frameless: true,
-	URL:       "/",
+	URL: "/",
 }
