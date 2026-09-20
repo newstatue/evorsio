@@ -7,6 +7,7 @@ gh = "2.100.0"
 protoc-gen-go = "1.36.12"
 protoc-gen-go-grpc = "1.6.2"
 "go:github.com/wailsapp/wails/v3/cmd/wails3" = "v3.0.0-beta.14"
+"go:github.com/pressly/goose/v3/cmd/goose" = "v3.28.0"
 
 [env]
 _.path = [
@@ -15,10 +16,6 @@ _.path = [
 
 [bootstrap.packages]
 "winget:NSIS.NSIS" = { os = "windows" }
-
-[tasks.package]
-description = "打包 Wails APP"
-run = "wails3 package"
 
 
 [tasks.test]
@@ -43,3 +40,12 @@ run = [
 [tasks.dev]
 description = "开发 APP"
 run = "wails3 dev"
+
+
+[tasks.package]
+description = "打包 Wails APP"
+run = "wails3 package"
+
+[tasks.update]
+description = "更新 Wails APP"
+run = "wails3 task common:update:build-assets"

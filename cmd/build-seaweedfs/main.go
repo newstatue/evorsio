@@ -20,20 +20,16 @@ func main() {
 	dir := strings.TrimSpace(string(out))
 
 	srcName := "weed"
-	dstName := "weed"
 
 	if runtime.GOOS == "windows" {
 		srcName = "weed.exe"
-		dstName = "weed.exe"
 	}
 
 	src := filepath.Join(dir, srcName)
 
-	dstDir := filepath.Join(constant.BuildDir)
+	dst := filepath.Join(constant.BuildDir, "weed")
 
-	dst := filepath.Join(dstDir, dstName)
-
-	if err := os.MkdirAll(dstDir, 0755); err != nil {
+	if err := os.MkdirAll(constant.BuildDir, 0755); err != nil {
 		panic(err)
 	}
 

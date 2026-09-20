@@ -26,11 +26,11 @@ type SeaweedFS struct {
 	client *Client
 }
 
-func New(cfg *common.FSConfig, l *slog.Logger) *SeaweedFS {
+func New(cfg *common.FSConfig, l *slog.Logger, binary []byte) *SeaweedFS {
 	return &SeaweedFS{
 		cfg:    cfg,
 		l:      l,
-		server: NewServer(l),
+		server: NewServer(l, binary),
 	}
 }
 
@@ -42,7 +42,7 @@ func (s *SeaweedFS) Start(ctx context.Context) error {
 		return fmt.Errorf("SeaweedFS 已经启动")
 	}
 
-	if err := s.server.Start(ctx, s.cfg.Path, s.cfg.DataDir); err != nil {
+	if err := s.server.Start(ctx, s.cfg.DataDir); err != nil {
 		return fmt.Errorf("启动 SeaweedFS 服务失败: %w", err)
 	}
 

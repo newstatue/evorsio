@@ -1,6 +1,8 @@
 package constant
 
 const BuildDir = "bin"
+const AppName = "evorsio"
+const LogDir = "logs"
 
 type Component string
 

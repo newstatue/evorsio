@@ -1,3 +1,5 @@
+-- +goose Up
+SELECT 'up SQL query';
 CREATE TABLE resource (
                           id TEXT PRIMARY KEY,
                           type TEXT NOT NULL,
@@ -28,3 +30,9 @@ CREATE TABLE operation_state (
                                  id INTEGER PRIMARY KEY CHECK (id = 1),
                                  cursor INTEGER NOT NULL DEFAULT 0
 );
+
+-- +goose Down
+SELECT 'down SQL query';
+DROP TABLE IF EXISTS resource;
+DROP TABLE IF EXISTS operation;
+DROP TABLE IF EXISTS operation_state;

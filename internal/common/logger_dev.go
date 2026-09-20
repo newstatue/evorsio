@@ -11,10 +11,12 @@ import (
 	"github.com/mattn/go-colorable"
 )
 
-func InitLogger(level slog.Level) {
+func InitLogger(level slog.Level) error {
 	l := slog.New(tint.NewTextHandler(colorable.NewColorable(os.Stderr), &tint.Options{
 		Level:      level,
 		TimeFormat: time.RFC3339,
 	}))
 	slog.SetDefault(l)
+
+	return nil
 }

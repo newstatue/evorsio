@@ -4,18 +4,15 @@ import (
 	"database/sql"
 	"log/slog"
 
-	"github.com/newstatue/evorsio/frontend"
+	"github.com/newstatue/evorsio/db"
 	"github.com/newstatue/evorsio/internal/common"
 	"github.com/newstatue/evorsio/internal/constant"
 	"github.com/newstatue/evorsio/internal/option"
 	"github.com/newstatue/evorsio/internal/seaweedfs"
+	"github.com/pressly/goose/v3"
 	"github.com/wailsapp/wails/v3/pkg/application"
 	_ "modernc.org/sqlite"
 )
-
-func init() {
-	common.InitLogger(slog.LevelDebug)
-}
 
 const (
 	kErr            = string(constant.LogArgError)
@@ -25,26 +22,34 @@ const (
 	vComponentWails = string(constant.ComponentWails)
 )
 
+func init() {
+	common.InitLogger(slog.LevelDebug)
+	common.InitMigration(db.Migrations)
+}
+
 func main() {
 	l := slog.Default()
 	al := l.With(kComponent, vComponentApp)
 
+	al.Info("APP 开始启动")
+
 	cfg, err := common.NewConfig()
 	if err != nil {
 		l.Error(string(constant.ErrParseConfig), kErr, err)
-		return
 	}
 
-	db, err := sql.Open(cfg.DB.Driver, cfg.DB.DSN)
+	d, err := sql.Open(cfg.DB.Driver, cfg.DB.DSN)
 	if err != nil {
 		l.Error("数据库初始化失败", kErr, err)
-		return
 	}
-	fs := seaweedfs.New(&cfg.FS, l.With(kComponent, vComponentFS))
+	if err := goose.Up(d, "migrations"); err != nil {
+		l.Error("数据库迁移失败", kErr, err)
+	}
+	fs := seaweedfs.New(&cfg.FS, l.With(kComponent, vComponentFS), SeaweedFS)
 	defer func(db *sql.DB, fs *seaweedfs.SeaweedFS) {
 		_ = db.Close()
 		_ = fs.Close()
-	}(db, fs)
+	}(d, fs)
 
 	app := application.New(application.Options{
 		Name:        "app",
@@ -52,7 +57,7 @@ func main() {
 		Logger:      l.With(kComponent, vComponentWails),
 		Services:    []application.Service{},
 		Assets: application.AssetOptions{
-			Handler: application.AssetFileServerFS(frontend.Assets),
+			Handler: application.AssetFileServerFS(Assets),
 		},
 		Mac: application.MacOptions{
 			ApplicationShouldTerminateAfterLastWindowClosed: true,
@@ -69,13 +74,13 @@ func main() {
 	app.Window.NewWithOptions(option.WindowOpt)
 
 	app.OnShutdown(func() {
-		_ = db.Close()
+		_ = d.Close()
 		_ = fs.Close()
 	})
 
 	ctx := app.Context()
 
-	if err := db.PingContext(ctx); err != nil {
+	if err := d.PingContext(ctx); err != nil {
 		al.ErrorContext(ctx, "数据库连接失败", kErr, err)
 		return
 	}

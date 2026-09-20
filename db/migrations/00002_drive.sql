@@ -1,3 +1,5 @@
+-- +goose Up
+SELECT 'up SQL query';
 CREATE TABLE file (
                       resource_id TEXT PRIMARY KEY,
                       size INTEGER NOT NULL DEFAULT 0,
@@ -18,3 +20,9 @@ CREATE TABLE entry (
                        FOREIGN KEY (parent_id) REFERENCES resource(id) ON DELETE CASCADE,
                        FOREIGN KEY (child_id) REFERENCES resource(id) ON DELETE CASCADE
 );
+
+-- +goose Down
+SELECT 'down SQL query';
+DROP TABLE IF EXISTS entry;
+DROP TABLE IF EXISTS symlink;
+DROP TABLE IF EXISTS file;

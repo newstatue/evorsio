@@ -5,11 +5,11 @@
 	"info": {
 		"0000": {
 			"ProductVersion": "0.0.1",
-			"CompanyName": "My Company",
-			"FileDescription": "A program that does X",
-			"LegalCopyright": "(c) 2025, My Company",
-			"ProductName": "My Product",
-			"Comments": "Some Product Comments"
+			"CompanyName": "Evorsio Inc.",
+			"FileDescription": "Evorsio desktop application",
+			"LegalCopyright": "Copyright © 2026 Evorsio Inc. All rights reserved.",
+			"ProductName": "evorsio",
+			"Comments": "Evorsio Desktop"
 		}
 	}
 }

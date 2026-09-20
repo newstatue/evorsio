@@ -10,24 +10,26 @@ import (
 	"log/slog"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"runtime"
 	"sync"
 	"time"
 )
 
 type Server struct {
-	mu sync.Mutex
+	mu     sync.Mutex
+	binary []byte
 
 	cmd  *exec.Cmd
 	done chan struct{}
 	l    *slog.Logger
 }
 
-func NewServer(l *slog.Logger) *Server {
-	return &Server{l: l}
+func NewServer(l *slog.Logger, binary []byte) *Server {
+	return &Server{l: l, binary: binary}
 }
 
-func (s *Server) Start(ctx context.Context, path string, dataDir string) error {
+func (s *Server) Start(ctx context.Context, dataDir string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -39,7 +41,12 @@ func (s *Server) Start(ctx context.Context, path string, dataDir string) error {
 		return fmt.Errorf("创建 SeaweedFS 数据目录失败: %w", err)
 	}
 
-	cmd := exec.CommandContext(ctx, path, "-log_json", "server", "-dir="+dataDir, "-filer", "-master.raftHashicorp")
+	path, err := s.extract()
+	if err != nil {
+		return err
+	}
+
+	cmd := exec.CommandContext(ctx, path, "-log_json", "server", "-dir="+dataDir, "-filer", "-master.raftHashicorp", "-webdav")
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
 		return err
@@ -160,4 +167,36 @@ func parseLevel(v any) slog.Level {
 	default:
 		return slog.LevelInfo
 	}
+}
+
+func (s *Server) extract() (string, error) {
+	cacheDir, err := os.UserCacheDir()
+	if err != nil {
+		return "", fmt.Errorf("获取缓存目录失败: %w", err)
+	}
+
+	dir := filepath.Join(cacheDir, "evorsio", "bin")
+
+	if err := os.MkdirAll(dir, 0o755); err != nil {
+		return "", fmt.Errorf("创建 SeaweedFS 目录失败: %w", err)
+	}
+
+	name := "weed"
+	if runtime.GOOS == "windows" {
+		name = "weed.exe"
+	}
+
+	path := filepath.Join(dir, name)
+
+	if err := os.WriteFile(path, s.binary, 0o755); err != nil {
+		return "", fmt.Errorf("释放 SeaweedFS 失败: %w", err)
+	}
+
+	if runtime.GOOS != "windows" {
+		if err := os.Chmod(path, 0o755); err != nil {
+			return "", fmt.Errorf("设置 SeaweedFS 执行权限失败: %w", err)
+		}
+	}
+
+	return path, nil
 }
