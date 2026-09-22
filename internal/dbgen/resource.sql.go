@@ -39,13 +39,13 @@ func (q *Queries) DeleteResourcesByIds(ctx context.Context, ids []string) (sql.R
 }
 
 const insertResource = `-- name: InsertResource :exec
-insert into resource (id, type, name, created_at, updated_at) values (?,?,?,?,?)
+insert into resource (id, kind,path, created_at, updated_at) values (?,?,?,?,?)
 `
 
 type InsertResourceParams struct {
 	ID        string
-	Type      string
-	Name      string
+	Kind      string
+	Path      string
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
@@ -53,8 +53,8 @@ type InsertResourceParams struct {
 func (q *Queries) InsertResource(ctx context.Context, arg InsertResourceParams) error {
 	_, err := q.db.ExecContext(ctx, insertResource,
 		arg.ID,
-		arg.Type,
-		arg.Name,
+		arg.Kind,
+		arg.Path,
 		arg.CreatedAt,
 		arg.UpdatedAt,
 	)
@@ -62,7 +62,7 @@ func (q *Queries) InsertResource(ctx context.Context, arg InsertResourceParams) 
 }
 
 const selectResourceById = `-- name: SelectResourceById :one
-select id, type, name, created_at, updated_at from resource where id = ?
+select id, kind, path, created_at, updated_at from resource where id = ?
 `
 
 func (q *Queries) SelectResourceById(ctx context.Context, id string) (Resource, error) {
@@ -70,20 +70,20 @@ func (q *Queries) SelectResourceById(ctx context.Context, id string) (Resource, 
 	var i Resource
 	err := row.Scan(
 		&i.ID,
-		&i.Type,
-		&i.Name,
+		&i.Kind,
+		&i.Path,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
 	return i, err
 }
 
-const selectResourcesByName = `-- name: SelectResourcesByName :many
-select id, type, name, created_at, updated_at from resource where name like '%'||?1 ||'%'
+const selectResourcesByPath = `-- name: SelectResourcesByPath :many
+select id, kind, path, created_at, updated_at from resource where path like '%'||?1 ||'%'
 `
 
-func (q *Queries) SelectResourcesByName(ctx context.Context, name sql.NullString) ([]Resource, error) {
-	rows, err := q.db.QueryContext(ctx, selectResourcesByName, name)
+func (q *Queries) SelectResourcesByPath(ctx context.Context, path sql.NullString) ([]Resource, error) {
+	rows, err := q.db.QueryContext(ctx, selectResourcesByPath, path)
 	if err != nil {
 		return nil, err
 	}
@@ -93,8 +93,8 @@ func (q *Queries) SelectResourcesByName(ctx context.Context, name sql.NullString
 		var i Resource
 		if err := rows.Scan(
 			&i.ID,
-			&i.Type,
-			&i.Name,
+			&i.Kind,
+			&i.Path,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {
@@ -109,18 +109,4 @@ func (q *Queries) SelectResourcesByName(ctx context.Context, name sql.NullString
 		return nil, err
 	}
 	return items, nil
-}
-
-const updateResourceById = `-- name: UpdateResourceById :execresult
-update resource set name = coalesce(?3,name), updated_at = ? where id = ?
-`
-
-type UpdateResourceByIdParams struct {
-	Name      sql.NullString
-	UpdatedAt time.Time
-	ID        string
-}
-
-func (q *Queries) UpdateResourceById(ctx context.Context, arg UpdateResourceByIdParams) (sql.Result, error) {
-	return q.db.ExecContext(ctx, updateResourceById, arg.Name, arg.UpdatedAt, arg.ID)
 }

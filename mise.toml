@@ -24,7 +24,10 @@ run = "go test ./..."
 
 [tasks.gen-sqlc]
 description = "生成 sqlc 代码"
-run = "sqlc generate -f db/sqlc.yml"
+run = [
+    "rm -rf ./internal/dbgen",
+    "sqlc generate -f db/sqlc.yml"
+]
 
 [tasks.build-seaweedfs]
 description = "根据当前系统构建 Darwin Manager"

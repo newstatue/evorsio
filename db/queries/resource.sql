@@ -1,14 +1,11 @@
 -- name: SelectResourceById :one
 select * from resource where id = ?;
 
--- name: SelectResourcesByName :many
-select * from resource where name like '%'||sqlc.arg(name) ||'%';
+-- name: SelectResourcesByPath :many
+select * from resource where path like '%'||sqlc.arg(path) ||'%';
 
 -- name: InsertResource :exec
-insert into resource (id, type, name, created_at, updated_at) values (?,?,?,?,?);
-
--- name: UpdateResourceById :execresult
-update resource set name = coalesce(sqlc.narg(name),name), updated_at = ? where id = ?;
+insert into resource (id, kind,path, created_at, updated_at) values (?,?,?,?,?);
 
 -- name: DeleteResourceById :execresult
 delete from resource where id = ?;

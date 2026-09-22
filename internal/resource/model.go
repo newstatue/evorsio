@@ -5,28 +5,28 @@ import (
 	"uuid"
 )
 
-type Type string
+type Kind string
 
 const (
-	TypeFile    Type = "file"
-	TypeFolder  Type = "folder"
-	TypeSymlink Type = "symlink"
+	KindDrive Kind = "drive"
 )
 
 type Resource struct {
 	ID        string
-	Type      Type
-	Name      string
+	Kind      Kind
+	Path      string
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
 
-func New(name string, typ Type) Resource {
+func New(path string, kind Kind) (Resource, error) {
+	now := time.Now()
+
 	return Resource{
 		ID:        uuid.NewV7().String(),
-		Name:      name,
-		Type:      typ,
-		UpdatedAt: time.Now(),
-		CreatedAt: time.Now(),
-	}
+		Kind:      kind,
+		Path:      path,
+		CreatedAt: now,
+		UpdatedAt: now,
+	}, nil
 }

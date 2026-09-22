@@ -5,29 +5,23 @@
 package dbgen
 
 import (
+	"database/sql"
 	"time"
 )
 
-type Entry struct {
-	ParentID string
-	ChildID  string
-}
-
-type File struct {
-	ResourceID string
-	Size       int64
-	MimeType   string
+type Operation struct {
+	ID            string
+	OperationType string
+	ResourceID    string
+	OldPath       sql.NullString
+	NewPath       sql.NullString
+	CreatedAt     time.Time
 }
 
 type Resource struct {
 	ID        string
-	Type      string
-	Name      string
+	Kind      string
+	Path      string
 	CreatedAt time.Time
 	UpdatedAt time.Time
-}
-
-type Symlink struct {
-	ResourceID string
-	TargetID   string
 }

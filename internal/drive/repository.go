@@ -28,7 +28,7 @@ func (r *Repository) GetFile(ctx context.Context, id uuid.UUID) (*File, error) {
 	return &File{
 		Resource: resource.Resource{
 			ID:        row.Resource.ID,
-			Type:      resource.Type(row.Resource.Type),
+			Type:      resource.Kind(row.Resource.Type),
 			Name:      row.Resource.Name,
 			CreatedAt: row.Resource.CreatedAt,
 			UpdatedAt: row.Resource.UpdatedAt,
@@ -46,7 +46,7 @@ func (r *Repository) GetFolder(ctx context.Context, id uuid.UUID) (*Folder, erro
 	return &Folder{
 		Resource: resource.Resource{
 			ID:        row.Resource.ID,
-			Type:      resource.Type(row.Resource.Type),
+			Type:      resource.Kind(row.Resource.Type),
 			Name:      row.Resource.Name,
 			CreatedAt: row.Resource.CreatedAt,
 			UpdatedAt: row.Resource.UpdatedAt,
@@ -62,7 +62,7 @@ func (r *Repository) GetSymlink(ctx context.Context, id uuid.UUID) (*Symlink, er
 	return &Symlink{
 		Resource: resource.Resource{
 			ID:        row.Resource.ID,
-			Type:      resource.Type(row.Resource.Type),
+			Type:      resource.Kind(row.Resource.Type),
 			Name:      row.Resource.Name,
 			CreatedAt: row.Resource.CreatedAt,
 			UpdatedAt: row.Resource.UpdatedAt,
