@@ -2,37 +2,25 @@
 SELECT 'up SQL query';
 CREATE TABLE resource (
                           id TEXT PRIMARY KEY,
-                          type TEXT NOT NULL,
-                          name TEXT NOT NULL,
+                          kind TEXT NOT NULL,
+                            path TEXT NOT NULL UNIQUE ,
                           created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
                           updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
-
-CREATE INDEX idx_resource_type ON resource(type);
-
 
 CREATE TABLE operation (
                            id TEXT PRIMARY KEY,
                            operation_type TEXT NOT NULL,
                            resource_id TEXT NOT NULL,
 
-                           old_parent_id TEXT,
-                           new_parent_id TEXT,
+                           old_path TEXT,
+                           new_path TEXT,
 
-                           old_name TEXT,
-                           new_name TEXT,
-
-                           created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
-
-CREATE TABLE operation_state (
-                                 id INTEGER PRIMARY KEY CHECK (id = 1),
-                                 cursor INTEGER NOT NULL DEFAULT 0
+                           created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                        FOREIGN KEY (resource_id) REFERENCES resource(id) ON DELETE CASCADE
 );
 
 -- +goose Down
 SELECT 'down SQL query';
 DROP TABLE IF EXISTS resource;
 DROP TABLE IF EXISTS operation;
-DROP TABLE IF EXISTS operation_state;

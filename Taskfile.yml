@@ -13,9 +13,6 @@ vars:
   VITE_PORT: '{{.WAILS_VITE_PORT | default 9245}}'
 
 env:
-  ENVIRONMENT: "dev"
-  NAME: "evo"
-  VERSION: "0.0.1"
   DSN: "file:./bin/data.sqlite"
   FS_PATH: "./bin/weed"
   FS_DATA_DIR: "./bin/weed-data"
@@ -28,7 +25,7 @@ tasks:
       - task: "{{OS}}:build"
         vars:
           DEV: "{{.DEV}}"
-          EXTRA_TAGS: '{{if eq .DEV "true"}}dev{{else}}prod{{end}}'
+          EXTRA_TAGS: '{{if .DEV}}dev{{else}}prod{{end}}'
 
   package:
     summary: Packages a production build of the application

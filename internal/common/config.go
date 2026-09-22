@@ -8,9 +8,14 @@ import (
 )
 
 type Config struct {
+	App  *AppConfig  `env:",init"`
 	HTTP *HTTPConfig `env:",init"`
 	DB   *DBConfig   `env:",init"`
 	FS   *FSConfig   `env:",init"`
+}
+
+type AppConfig struct {
+	LogLevel string `env:"LOG_LEVEL" envDefault:"info"`
 }
 
 type HTTPConfig struct {
