@@ -27,7 +27,7 @@ description = "生成 sqlc 代码"
 run = "sqlc generate -f db/sqlc.yml"
 
 [tasks.build-seaweedfs]
-description = "根据当前系统构建 Darwin SeaweedFS"
+description = "根据当前系统构建 Darwin Manager"
 run = "go run ./cmd/build-seaweedfs"
 
 [tasks.fmt]

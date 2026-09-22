@@ -8,9 +8,9 @@ import (
 )
 
 type Config struct {
-	HTTP HTTPConfig
-	DB   DBConfig
-	FS   FSConfig
+	HTTP *HTTPConfig `env:",init"`
+	DB   *DBConfig   `env:",init"`
+	FS   *FSConfig   `env:",init"`
 }
 
 type HTTPConfig struct {
@@ -42,12 +42,20 @@ func NewConfig() (*Config, error) {
 		cfg.DB.DSN = file
 	}
 
-	if cfg.FS.DataDir == "" {
-		cfg.FS.DataDir = filepath.Join(xdg.DataHome, "evorsio", "weed-data")
+	if cfg.FS.Path == "" {
+		file, err := xdg.DataFile("evorsio/weed")
 		if err != nil {
 			return nil, err
 		}
-		cfg.FS.DataDir = file
+		cfg.FS.Path = file
+	}
+
+	if cfg.FS.DataDir == "" {
+		file, err := xdg.DataFile("evorsio/weed-data/.keep")
+		if err != nil {
+			return nil, err
+		}
+		cfg.FS.DataDir = filepath.Dir(file)
 	}
 
 	return cfg, nil

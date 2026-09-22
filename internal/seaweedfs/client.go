@@ -10,21 +10,24 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
+const (
+	defaultTickerTime = time.Millisecond * 200
+)
+
 type Client struct {
 	conn  *grpc.ClientConn
 	filer fsgen.SeaweedFilerClient
 }
 
-func NewClient(addr string) *Client {
+func NewClient(addr string) (*Client, error) {
 	conn, err := grpc.NewClient(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
-
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 	return &Client{
 		conn:  conn,
 		filer: fsgen.NewSeaweedFilerClient(conn),
-	}
+	}, nil
 }
 
 func (c *Client) Close() error {
@@ -37,32 +40,22 @@ func (c *Client) Close() error {
 func (c *Client) Ping(ctx context.Context) error {
 	_, err := c.filer.Ping(ctx, &fsgen.PingRequest{})
 	if err != nil {
-		return fmt.Errorf("SeaweedFS Filer 连接失败: %w", err)
+		return fmt.Errorf("filer 连接失败: %w", err)
 	}
 	return nil
 }
 
 func (c *Client) WaitReady(ctx context.Context) error {
-	ticker := time.NewTicker(300 * time.Millisecond)
+	ticker := time.NewTicker(defaultTickerTime)
 	defer ticker.Stop()
-
 	for {
-		pingCtx, cancel := context.WithTimeout(
-			ctx,
-			time.Second,
-		)
-
-		err := c.Ping(pingCtx)
-		cancel()
-
-		if err == nil {
+		if err := c.Ping(ctx); err == nil {
 			return nil
 		}
 
 		select {
 		case <-ctx.Done():
-			return ctx.Err()
-
+			return fmt.Errorf("等待 filer 就绪失败 %w", ctx.Err())
 		case <-ticker.C:
 		}
 	}

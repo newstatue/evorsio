@@ -35,7 +35,7 @@ func main() {
 
 	cfg, err := common.NewConfig()
 	if err != nil {
-		l.Error(string(constant.ErrParseConfig), kErr, err)
+		l.Error("配置解析出错", kErr, err)
 	}
 
 	d, err := sql.Open(cfg.DB.Driver, cfg.DB.DSN)
@@ -45,8 +45,11 @@ func main() {
 	if err := goose.Up(d, "migrations"); err != nil {
 		l.Error("数据库迁移失败", kErr, err)
 	}
-	fs := seaweedfs.New(&cfg.FS, l.With(kComponent, vComponentFS), SeaweedFS)
-	defer func(db *sql.DB, fs *seaweedfs.SeaweedFS) {
+	fs, err := seaweedfs.NewManager(cfg.FS, l.With(kComponent, vComponentFS))
+	if err != nil {
+		al.Error("对象存储初始化失败", kErr, err)
+	}
+	defer func(db *sql.DB, fs *seaweedfs.Manager) {
 		_ = db.Close()
 		_ = fs.Close()
 	}(d, fs)
@@ -73,10 +76,7 @@ func main() {
 
 	app.Window.NewWithOptions(option.WindowOpt)
 
-	app.OnShutdown(func() {
-		_ = d.Close()
-		_ = fs.Close()
-	})
+	app.OnShutdown(func() {})
 
 	ctx := app.Context()
 

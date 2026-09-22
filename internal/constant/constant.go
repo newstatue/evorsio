@@ -12,15 +12,18 @@ const (
 	ComponentWails Component = "wails"
 )
 
+type SubComponent string
+
+const (
+	SubComponentServer SubComponent = "server"
+)
+
 type LogArg string
 
 const (
-	LogArgError     LogArg = "error"
-	LogArgComponent LogArg = "component"
+	LogArgError        LogArg = "error"
+	LogArgComponent    LogArg = "component"
+	LogArgSubComponent LogArg = "subcomponent"
 )
 
 type ErrMsg string
-
-const (
-	ErrParseConfig ErrMsg = "配置解析出错"
-)

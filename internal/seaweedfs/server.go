@@ -5,47 +5,36 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io"
 	"log/slog"
-	"os"
 	"os/exec"
-	"path/filepath"
-	"runtime"
 	"sync"
-	"time"
+	"syscall"
 )
 
 type Server struct {
-	mu     sync.Mutex
-	binary []byte
-
-	cmd  *exec.Cmd
-	done chan struct{}
-	l    *slog.Logger
+	mu  sync.Mutex
+	cmd *exec.Cmd
+	l   *slog.Logger
 }
 
-func NewServer(l *slog.Logger, binary []byte) *Server {
-	return &Server{l: l, binary: binary}
+var (
+	ErrProcessAlreadyRunning = errors.New("进程已经在运行")
+)
+
+func NewServer(l *slog.Logger) *Server {
+	return &Server{l: l}
 }
 
-func (s *Server) Start(ctx context.Context, dataDir string) error {
+func (s *Server) Start(ctx context.Context, path string, dataDir string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
 	if s.cmd != nil && s.cmd.Process != nil {
-		return fmt.Errorf("SeaweedFS 已经启动")
+		return ErrProcessAlreadyRunning
 	}
 
-	if err := os.MkdirAll(dataDir, 0o755); err != nil {
-		return fmt.Errorf("创建 SeaweedFS 数据目录失败: %w", err)
-	}
-
-	path, err := s.extract()
-	if err != nil {
-		return err
-	}
-
+	// 启动新进程
 	cmd := exec.CommandContext(ctx, path, "-log_json", "server", "-dir="+dataDir, "-filer", "-master.raftHashicorp", "-webdav")
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
@@ -55,73 +44,29 @@ func (s *Server) Start(ctx context.Context, dataDir string) error {
 	if err != nil {
 		return err
 	}
-
 	if err := cmd.Start(); err != nil {
 		return err
 	}
 
 	s.cmd = cmd
-	done := make(chan struct{})
-	s.done = done
 
-	go pipeLog(ctx, s.l, stdout)
-	go pipeLog(ctx, s.l, stderr)
+	go pipeLog(s.l, stdout)
+	go pipeLog(s.l, stderr)
+
 	go func() {
-		defer close(done)
 		err := cmd.Wait()
-		s.mu.Lock()
-		defer s.mu.Unlock()
 		if s.cmd != cmd {
 			return
 		}
 		s.cmd = nil
-		if err != nil {
-			s.l.ErrorContext(ctx, "SeaweedFS Server 已退出", KErr, err)
+		if err != nil && ctx.Err() == nil {
+			s.l.ErrorContext(ctx, "Manager Server 已退出", KErr, err)
 		}
 	}()
 	return nil
 }
 
-func (s *Server) Stop() error {
-	s.mu.Lock()
-
-	if s.cmd == nil || s.cmd.Process == nil {
-		s.mu.Unlock()
-		return nil
-	}
-
-	process, done := s.cmd.Process, s.done
-	s.mu.Unlock()
-
-	var err error
-	if runtime.GOOS == "windows" {
-		err = process.Kill()
-	} else {
-		err = process.Signal(os.Interrupt)
-	}
-	if err != nil && !errors.Is(err, os.ErrProcessDone) {
-		return err
-	}
-	select {
-	case <-done:
-		return nil
-	case <-time.After(5 * time.Second):
-		if err := process.Kill(); err != nil && !errors.Is(err, os.ErrProcessDone) {
-			return err
-		}
-		<-done
-		return nil
-	}
-}
-
-func (s *Server) Running() bool {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-
-	return s.cmd != nil && s.cmd.Process != nil
-}
-
-func pipeLog(ctx context.Context, logger *slog.Logger, r io.Reader) {
+func pipeLog(logger *slog.Logger, r io.Reader) {
 	scanner := bufio.NewScanner(r)
 
 	for scanner.Scan() {
@@ -129,14 +74,14 @@ func pipeLog(ctx context.Context, logger *slog.Logger, r io.Reader) {
 
 		var data map[string]any
 		if err := json.Unmarshal([]byte(ln), &data); err != nil {
-			logger.DebugContext(ctx, ln)
+			logger.Debug(ln)
 			continue
 		}
 
 		level := parseLevel(data["level"])
 		msg, _ := data["msg"].(string)
 
-		attrs := []slog.Attr{}
+		var attrs []slog.Attr
 
 		if file, ok := data["file"].(string); ok {
 			attrs = append(attrs, slog.String("file", file))
@@ -146,11 +91,11 @@ func pipeLog(ctx context.Context, logger *slog.Logger, r io.Reader) {
 			attrs = append(attrs, slog.Any("line", line))
 		}
 
-		logger.LogAttrs(ctx, level, msg, attrs...)
+		logger.LogAttrs(context.Background(), level, msg, attrs...)
 	}
 
 	if err := scanner.Err(); err != nil {
-		logger.ErrorContext(ctx, "读取 SeaweedFS 日志失败", KErr, err)
+		logger.Error("读取 Manager 日志失败", KErr, err)
 	}
 }
 
@@ -169,34 +114,18 @@ func parseLevel(v any) slog.Level {
 	}
 }
 
-func (s *Server) extract() (string, error) {
-	cacheDir, err := os.UserCacheDir()
+func (s *Server) Close() error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if s.cmd == nil || s.cmd.Process == nil {
+		return nil
+	}
+
+	err := s.cmd.Process.Signal(syscall.SIGTERM)
 	if err != nil {
-		return "", fmt.Errorf("获取缓存目录失败: %w", err)
+		err = s.cmd.Process.Kill()
 	}
-
-	dir := filepath.Join(cacheDir, "evorsio", "bin")
-
-	if err := os.MkdirAll(dir, 0o755); err != nil {
-		return "", fmt.Errorf("创建 SeaweedFS 目录失败: %w", err)
-	}
-
-	name := "weed"
-	if runtime.GOOS == "windows" {
-		name = "weed.exe"
-	}
-
-	path := filepath.Join(dir, name)
-
-	if err := os.WriteFile(path, s.binary, 0o755); err != nil {
-		return "", fmt.Errorf("释放 SeaweedFS 失败: %w", err)
-	}
-
-	if runtime.GOOS != "windows" {
-		if err := os.Chmod(path, 0o755); err != nil {
-			return "", fmt.Errorf("设置 SeaweedFS 执行权限失败: %w", err)
-		}
-	}
-
-	return path, nil
+	s.cmd = nil
+	return err
 }

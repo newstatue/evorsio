@@ -3,6 +3,7 @@ module github.com/newstatue/evorsio
 go 1.26.0
 
 require (
+	github.com/caarlos0/env/v11 v11.4.1
 	github.com/lmittmann/tint v1.2.0
 	github.com/pressly/goose/v3 v3.28.0
 	github.com/stretchr/testify v1.12.1
@@ -13,7 +14,6 @@ require (
 )
 
 require (
-	github.com/caarlos0/env/v11 v11.4.1 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/mfridman/interpolate v0.0.2 // indirect
@@ -32,7 +32,7 @@ require (
 )
 
 require (
-	github.com/adrg/xdg v0.5.3 // indirect
+	github.com/adrg/xdg v0.5.3
 	github.com/coder/websocket v1.8.15 // indirect
 	github.com/go-ole/go-ole v1.3.0 // indirect
 	github.com/godbus/dbus/v5 v5.2.2 // indirect
