@@ -2,9 +2,15 @@ package drive
 
 import "github.com/newstatue/evorsio/internal/resource"
 
-type Drive struct {
+type EntryType string
+
+const (
+	File   EntryType = "file"
+	Folder EntryType = "folder"
+)
+
+type Entry struct {
 	resource.Resource
 
-	OwnerID string
-	Quota   int64
+	Type EntryType
 }
