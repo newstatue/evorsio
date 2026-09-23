@@ -19,7 +19,7 @@ type Resource struct {
 	UpdatedAt time.Time
 }
 
-func New(path string, kind Kind) (Resource, error) {
+func New(path string, kind Kind) Resource {
 	now := time.Now()
 
 	return Resource{
@@ -28,5 +28,5 @@ func New(path string, kind Kind) (Resource, error) {
 		Path:      path,
 		CreatedAt: now,
 		UpdatedAt: now,
-	}, nil
+	}
 }

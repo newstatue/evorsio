@@ -11,8 +11,9 @@ type Repository struct {
 	db *sql.DB
 }
 
-func NewRepository(q *dbgen.Queries) *Repository {
+func NewRepository(db *sql.DB) *Repository {
 	return &Repository{
-		q: q,
+		q:  dbgen.New(db),
+		db: db,
 	}
 }

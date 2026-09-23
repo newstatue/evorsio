@@ -7,6 +7,7 @@ import (
 	"github.com/newstatue/evorsio/db"
 	"github.com/newstatue/evorsio/internal/common"
 	"github.com/newstatue/evorsio/internal/constant"
+	"github.com/newstatue/evorsio/internal/drive"
 	"github.com/newstatue/evorsio/internal/option"
 	"github.com/newstatue/evorsio/internal/seaweedfs"
 	"github.com/pressly/goose/v3"
@@ -25,6 +26,7 @@ const (
 func init() {
 	common.InitLogger(slog.LevelDebug)
 	common.InitMigration(db.Migrations)
+	common.InitValidator(common.LocaleZH)
 }
 
 func main() {
@@ -58,7 +60,9 @@ func main() {
 		Name:        "app",
 		Description: "A demo of using raw HTML & CSS",
 		Logger:      l.With(kComponent, vComponentWails),
-		Services:    []application.Service{},
+		Services: []application.Service{
+			application.NewService(drive.NewService(drive.NewRepository(d), fs.Filer())),
+		},
 		Assets: application.AssetOptions{
 			Handler: application.AssetFileServerFS(Assets),
 		},

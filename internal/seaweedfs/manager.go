@@ -2,11 +2,13 @@ package seaweedfs
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log/slog"
 
 	"github.com/newstatue/evorsio/internal/common"
 	"github.com/newstatue/evorsio/internal/constant"
+	"github.com/newstatue/evorsio/internal/fsgen"
 )
 
 const (
@@ -54,5 +56,9 @@ func (m *Manager) Close() error {
 	if err := m.server.Close(); err != nil {
 		errs = append(errs, fmt.Errorf("关闭 SeaweedFS server: %w", err))
 	}
-	return nil
+	return errors.Join(errs...)
+}
+
+func (m *Manager) Filer() fsgen.SeaweedFilerClient {
+	return m.client.filer
 }
