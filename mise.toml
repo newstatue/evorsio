@@ -54,3 +54,8 @@ run = "wails3 package"
 [tasks.update]
 description = "更新 Wails APP"
 run = "wails3 task common:update:build-assets"
+
+[tasks.gen-ts]
+description = "生成 Wails Bindings"
+run = "wails3 task common:update:build-assets"
+
