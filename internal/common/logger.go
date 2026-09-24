@@ -9,7 +9,7 @@ import (
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
-func InitLogger(level slog.Level) {
+func InitLogger() {
 	fn, _ := xdg.StateFile("evorsio/evorsio.log")
 
 	writer := &lumberjack.Logger{
@@ -20,7 +20,7 @@ func InitLogger(level slog.Level) {
 		Compress:   true,
 	}
 
-	slog.SetDefault(slog.New(slog.NewJSONHandler(writer, &slog.HandlerOptions{Level: level})))
+	slog.SetDefault(slog.New(slog.NewJSONHandler(writer, &slog.HandlerOptions{Level: slog.LevelInfo})))
 
 	slog.Info("logger 初始化完成")
 }

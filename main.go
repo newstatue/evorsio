@@ -24,7 +24,7 @@ const (
 )
 
 func init() {
-	common.InitLogger(slog.LevelDebug)
+	common.InitLogger()
 	common.InitMigration(db.Migrations)
 	common.InitValidator(common.LocaleZH)
 }
