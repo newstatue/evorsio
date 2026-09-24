@@ -48,11 +48,7 @@ func NewConfig() (*Config, error) {
 	}
 
 	if cfg.FS.Path == "" {
-		file, err := xdg.DataFile("evorsio/weed")
-		if err != nil {
-			return nil, err
-		}
-		cfg.FS.Path = file
+		cfg.FS.Path = GetExePath("weed")
 	}
 
 	if cfg.FS.DataDir == "" {

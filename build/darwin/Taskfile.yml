@@ -160,6 +160,8 @@ tasks:
     cmds:
       - mkdir -p "{{.BIN_DIR}}/{{.APP_NAME}}.app/Contents/MacOS"
       - mkdir -p "{{.BIN_DIR}}/{{.APP_NAME}}.app/Contents/Resources"
+      # 复制 seaweedfs 二进制文件打包进应用
+      - cp ../bin/weed "{{.BIN_DIR}}/{{.APP_NAME}}.app/Contents/Resources/bin/weed"
       - cp build/darwin/icons.icns "{{.BIN_DIR}}/{{.APP_NAME}}.app/Contents/Resources"
       - |
         if [ -f build/darwin/Assets.car ]; then

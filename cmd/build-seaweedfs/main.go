@@ -9,7 +9,6 @@ import (
 	"strings"
 
 	"github.com/newstatue/evorsio/internal/common"
-	"github.com/newstatue/evorsio/internal/constant"
 )
 
 func main() {
@@ -34,10 +33,6 @@ func main() {
 	src := filepath.Join(dir, srcName)
 
 	dst := filepath.Join(cfg.FS.Path)
-
-	if err := os.MkdirAll(constant.BuildDir, 0755); err != nil {
-		panic(err)
-	}
 
 	data, err := os.ReadFile(src)
 	if err != nil {

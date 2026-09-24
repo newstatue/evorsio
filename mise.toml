@@ -6,7 +6,7 @@ gh = "2.100.0"
 "github:seaweedfs/seaweedfs" = "4.45"
 protoc-gen-go = "1.36.12"
 protoc-gen-go-grpc = "1.6.2"
-"go:github.com/wailsapp/wails/v3/cmd/wails3" = "v3.0.0-beta.14"
+"go:github.com/wailsapp/wails/v3/cmd/wails3" = "v3.0.0-beta.25"
 "go:github.com/pressly/goose/v3/cmd/goose" = "v3.28.0"
 
 [env]
@@ -29,9 +29,11 @@ run = [
     "sqlc generate -f db/sqlc.yml"
 ]
 
-[tasks.build-seaweedfs]
+[tasks.build-fs]
 description = "根据当前系统构建 Darwin Manager"
 run = "go run ./cmd/build-seaweedfs"
+[tasks.build-fs.env]
+FS_PATH = "./bin/weed"
 
 [tasks.fmt]
 description = "格式化代码"
