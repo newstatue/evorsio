@@ -13,8 +13,8 @@ function RouteComponent() {
       <DashHeader />
       <DashSidebar />
       <SidebarInset className="min-h-0 flex-1 bg-background pt-(--header-height)">
-        <main className="flex flex-1 flex-col overflow-y-auto p-2">
-          <div className="mx-auto w-5/6 max-w-2xl">
+        <main className="flex min-h-0 flex-1 flex-col overflow-hidden px-4">
+          <div className="mx-auto flex min-h-0 w-full flex-1 flex-col">
             <Outlet />
           </div>
         </main>

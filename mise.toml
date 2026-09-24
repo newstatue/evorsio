@@ -39,7 +39,7 @@ FS_PATH = "./bin/weed"
 description = "格式化代码"
 run = [
     "go fmt ./...",
-    "npm --prefix ./web run format"
+    "npm --prefix ./frontend run format"
 ]
 
 [tasks.dev]

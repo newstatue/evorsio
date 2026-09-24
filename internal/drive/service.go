@@ -27,33 +27,48 @@ type ListEntriesReq struct {
 	Name string
 }
 
-func (s *Service) ListEntries(ctx context.Context, req ListEntriesReq) ([]*Entry, error) {
+func (s *Service) ListEntries(ctx context.Context, req ListEntriesReq) (common.PageResult[*Entry], error) {
 	req.Init()
 	dir := req.Dir
+	size := req.Size + 1
 	fsReq := &fsgen.ListEntriesRequest{
 		Directory:         dir,
 		Prefix:            req.Name,
 		StartFromFileName: req.Cursor,
-		Limit:             uint32(req.Size),
+		Limit:             uint32(size),
 		OmitChunks:        true,
 	}
 
 	stream, err := s.filer.ListEntries(ctx, fsReq)
 	if err != nil {
-		return nil, err
+		return common.PageResult[*Entry]{}, err
 	}
 
-	entries := make([]*Entry, 0, req.Size)
+	entries := make([]*Entry, 0, size)
 	for {
 		resp, err := stream.Recv()
 		if errors.Is(err, io.EOF) {
 			break
 		}
 		if err != nil {
-			return nil, err
+			return common.PageResult[*Entry]{}, err
 		}
 		entries = append(entries, NewEntryFromFS(dir, resp.GetEntry()))
 	}
 
-	return entries, nil
+	hasMore := len(entries) > req.Size
+	if hasMore {
+		entries = entries[:req.Size]
+	}
+
+	var nextCursor string
+	if len(entries) > 0 {
+		nextCursor = entries[len(entries)-1].Name
+	}
+
+	return common.PageResult[*Entry]{
+		Items:      entries,
+		NextCursor: nextCursor,
+		HasMore:    hasMore,
+	}, nil
 }

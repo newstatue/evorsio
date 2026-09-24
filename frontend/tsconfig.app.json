@@ -19,10 +19,13 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "erasableSyntaxOnly": true,
+
+    /* 类型擦除后仍是合法js */
+    "erasableSyntaxOnly": false,
     "noFallthroughCasesInSwitch": true,
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@bindings/*": ["./bindings/*"]
     }
   },
   "include": ["src"]

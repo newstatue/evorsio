@@ -1,8 +1,8 @@
 package common
 
 type PageQuery struct {
-	Cursor string `json:"cursor"`
-	Size   int    `json:"limit"`
+	Cursor string
+	Size   int
 }
 
 func (p PageQuery) Init() {
@@ -12,7 +12,7 @@ func (p PageQuery) Init() {
 }
 
 type PageResult[T any] struct {
-	Items      []T    `json:"items"`
-	NextCursor string `json:"nextCursor,omitempty"`
-	HasMore    bool   `json:"hasMore"`
+	Items      []T
+	NextCursor string
+	HasMore    bool
 }

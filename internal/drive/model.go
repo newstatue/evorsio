@@ -17,6 +17,7 @@ const (
 type Entry struct {
 	resource.Resource
 
+	Name string
 	Type EntryType
 }
 
@@ -27,8 +28,10 @@ func NewEntryFromFS(dir string, entry *fsgen.Entry) *Entry {
 	} else {
 		typ = File
 	}
+	name := entry.GetName()
 	return &Entry{
-		Resource: resource.New(path.Join(dir, entry.GetName()), resource.KindDrive),
+		Resource: resource.New(path.Join(dir, name), resource.KindDrive),
 		Type:     typ,
+		Name:     name,
 	}
 }

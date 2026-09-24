@@ -24,15 +24,15 @@ func main() {
 
 	dir := strings.TrimSpace(string(out))
 
-	srcName := "weed"
+	name := "weed"
+	dst := cfg.FS.Path
 
 	if runtime.GOOS == "windows" {
-		srcName = "weed.exe"
+		name += ".exe"
+		dst += ".exe"
 	}
 
-	src := filepath.Join(dir, srcName)
-
-	dst := filepath.Join(cfg.FS.Path)
+	src := filepath.Join(dir, name)
 
 	data, err := os.ReadFile(src)
 	if err != nil {
