@@ -1,5 +1,7 @@
 import {
-  columnFilteringFeature, columnResizingFeature, columnSizingFeature,
+  columnFilteringFeature,
+  columnResizingFeature,
+  columnSizingFeature,
   columnVisibilityFeature,
   createFilteredRowModel,
   createPaginatedRowModel,

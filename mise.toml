@@ -58,5 +58,5 @@ run = "wails3 task common:update:build-assets"
 
 [tasks.gen-ts]
 description = "生成 Wails Bindings"
-run = "wails3 task common:update:build-assets"
+run = "wails3 generate bindings -ts -i -clean=true"
 

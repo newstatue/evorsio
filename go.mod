@@ -3,6 +3,7 @@ module github.com/newstatue/evorsio
 go 1.26.0
 
 require (
+	filippo.io/age v1.3.2
 	github.com/caarlos0/env/v11 v11.4.1
 	github.com/go-playground/locales v0.14.1
 	github.com/go-playground/universal-translator v0.18.2
@@ -17,6 +18,7 @@ require (
 )
 
 require (
+	filippo.io/hpke v0.4.0 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.15 // indirect
 	github.com/google/uuid v1.6.0 // indirect

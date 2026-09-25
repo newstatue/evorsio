@@ -10,14 +10,10 @@ import {
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore: Unused imports
-import * as common$0 from "../common/models.js"
-
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore: Unused imports
 import * as $models from "./models.js"
 
-export function ListEntries(
-  req: $models.ListEntriesReq
-): $CancellablePromise<common$0.PageResult<$models.Entry | null>> {
-  return $Call.ByID(2180002316, req)
+export function CreateVault(
+  req: $models.CreateVaultReq
+): $CancellablePromise<void> {
+  return $Call.ByID(1149370124, req)
 }

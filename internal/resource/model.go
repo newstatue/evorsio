@@ -1,14 +1,23 @@
 package resource
 
 import (
+	"path"
 	"time"
 	"uuid"
+
+	"github.com/newstatue/evorsio/internal/fsgen"
 )
 
 type Kind string
 
 const (
+	ExtendedID   = "evorsio.id"
+	ExtendedKind = "evorsio.kind"
+)
+
+const (
 	KindDrive Kind = "drive"
+	KindVault Kind = "vault"
 )
 
 type Resource struct {
@@ -19,14 +28,24 @@ type Resource struct {
 	UpdatedAt time.Time
 }
 
-func New(path string, kind Kind) Resource {
-	now := time.Now()
+func New(dir string, kind Kind) *Resource {
 
-	return Resource{
-		ID:        uuid.NewV7().String(),
-		Kind:      kind,
-		Path:      path,
-		CreatedAt: now,
-		UpdatedAt: now,
+	id := uuid.NewV7().String()
+	return &Resource{
+		ID:   id,
+		Kind: kind,
+		Path: path.Join(string(kind), dir, id),
+	}
+}
+
+func NewFromFS(dir string, entry *fsgen.Entry) *Resource {
+	attr := entry.GetAttributes()
+
+	return &Resource{
+		ID:        string(entry.GetExtended()[ExtendedID]),
+		Kind:      Kind(entry.GetExtended()[ExtendedKind]),
+		Path:      path.Join(dir, entry.GetName()),
+		CreatedAt: time.Unix(attr.GetCrtime(), int64(attr.GetCrtimeNs())),
+		UpdatedAt: time.Unix(attr.GetMtime(), int64(attr.GetMtimeNs())),
 	}
 }

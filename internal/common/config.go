@@ -8,10 +8,11 @@ import (
 )
 
 type Config struct {
-	App  *AppConfig  `env:",init"`
-	HTTP *HTTPConfig `env:",init"`
-	DB   *DBConfig   `env:",init"`
-	FS   *FSConfig   `env:",init"`
+	App   *AppConfig   `env:",init"`
+	HTTP  *HTTPConfig  `env:",init"`
+	DB    *DBConfig    `env:",init"`
+	FS    *FSConfig    `env:",init"`
+	Vault *VaultConfig `env:",init"`
 }
 
 type AppConfig struct {
@@ -32,6 +33,10 @@ type FSConfig struct {
 	DataDir  string `env:"FS_DATA_DIR"`
 	Addr     string `env:"FS_ADDR" envDefault:"127.0.0.1:18888"`
 	MountDir string `env:"FS_MOUNT_DIR"`
+}
+
+type VaultConfig struct {
+	MasterPass string `env:"VAULT_MASTER_PASS" envDefault:"evorsio"`
 }
 
 func NewConfig() (*Config, error) {

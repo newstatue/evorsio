@@ -10,6 +10,7 @@ import (
 	"github.com/newstatue/evorsio/internal/drive"
 	"github.com/newstatue/evorsio/internal/option"
 	"github.com/newstatue/evorsio/internal/seaweedfs"
+	"github.com/newstatue/evorsio/internal/vault"
 	"github.com/pressly/goose/v3"
 	"github.com/wailsapp/wails/v3/pkg/application"
 	_ "modernc.org/sqlite"
@@ -38,23 +39,35 @@ func main() {
 	cfg, err := common.NewConfig()
 	if err != nil {
 		l.Error("配置解析出错", kErr, err)
+		return
 	}
 
 	d, err := sql.Open(cfg.DB.Driver, cfg.DB.DSN)
 	if err != nil {
 		l.Error("数据库初始化失败", kErr, err)
+		return
 	}
 	if err := goose.Up(d, "migrations"); err != nil {
 		l.Error("数据库迁移失败", kErr, err)
+		_ = d.Close()
+		return
 	}
 	fs, err := seaweedfs.NewManager(cfg.FS, l.With(kComponent, vComponentFS))
 	if err != nil {
 		al.Error("对象存储初始化失败", kErr, err)
+		_ = d.Close()
+		return
 	}
 	defer func(db *sql.DB, fs *seaweedfs.Manager) {
 		_ = db.Close()
 		_ = fs.Close()
 	}(d, fs)
+
+	v, err := vault.New(cfg.Vault.MasterPass)
+	if err != nil {
+		l.Error("创建 Vault 失败", kErr, err)
+		return
+	}
 
 	app := application.New(application.Options{
 		Name:        "app",
@@ -62,6 +75,7 @@ func main() {
 		Logger:      l.With(kComponent, vComponentWails),
 		Services: []application.Service{
 			application.NewService(drive.NewService(drive.NewRepository(d), fs.Filer())),
+			application.NewService(vault.NewService(v, fs.Filer(), vault.NewGenerator())),
 		},
 		Assets: application.AssetOptions{
 			Handler: application.AssetFileServerFS(Assets),

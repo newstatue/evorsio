@@ -1,8 +1,6 @@
 package drive
 
 import (
-	"path"
-
 	"github.com/newstatue/evorsio/internal/fsgen"
 	"github.com/newstatue/evorsio/internal/resource"
 )
@@ -14,8 +12,12 @@ const (
 	Folder EntryType = "folder"
 )
 
+const (
+	ExtendedDriveName = "evorsio.drive.name"
+)
+
 type Entry struct {
-	resource.Resource
+	*resource.Resource
 
 	Name string
 	Type EntryType
@@ -29,9 +31,13 @@ func NewEntryFromFS(dir string, entry *fsgen.Entry) *Entry {
 	} else {
 		typ = File
 	}
+
 	name := entry.GetName()
+	if driveName := string(entry.GetExtended()[ExtendedDriveName]); driveName != "" {
+		name = driveName
+	}
 	return &Entry{
-		Resource: resource.New(path.Join(dir, name), resource.KindDrive),
+		Resource: resource.NewFromFS(dir, entry),
 		Type:     typ,
 		Name:     name,
 		Mime:     entry.GetAttributes().GetMime(),
