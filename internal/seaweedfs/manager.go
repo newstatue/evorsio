@@ -53,6 +53,7 @@ func (m *Manager) Start(ctx context.Context) error {
 		"-master.raftHashicorp",
 		"-webdav",
 	)
+	configureProcess(cmdS)
 
 	if err := m.server.Start(ctx, cmdS); err != nil {
 		return fmt.Errorf("启动 SeaweedFS server: %w", err)
@@ -72,6 +73,7 @@ func (m *Manager) Start(ctx context.Context) error {
 		"-dir="+m.cfg.MountDir,
 		"-volumeName=evorsio",
 	)
+	configureProcess(cmdM)
 
 	if err := m.mount.Start(ctx, cmdM); err != nil {
 		_ = m.server.Close()

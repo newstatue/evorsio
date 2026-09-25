@@ -89,6 +89,11 @@ Section
 
     !insertmacro wails.webview2runtime
 
+    # 复制 seaweedfs 二进制文件打包进应用
+    ; SeaweedFS
+        SetOutPath "$INSTDIR\bin"
+        File "..\..\..\bin\weed.exe"
+
     SetOutPath $INSTDIR
     
     !insertmacro wails.files

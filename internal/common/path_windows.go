@@ -7,7 +7,7 @@ import (
 )
 
 func exePath(filename string, exeDir string) string {
-	return filepath.Join(exeDir, filename+".exe")
+	return filepath.Join(exeDir, "bin", filename+".exe")
 }
 
 func mountDir() string {
