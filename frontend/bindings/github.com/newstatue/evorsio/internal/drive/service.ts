@@ -3,21 +3,16 @@
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore: Unused imports
-import {
-  Call as $Call,
-  CancellablePromise as $CancellablePromise,
-} from "@wailsio/runtime"
+import { Call as $Call, CancellablePromise as $CancellablePromise } from "@wailsio/runtime";
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore: Unused imports
-import * as common$0 from "../common/models.js"
+import * as common$0 from "../common/models.js";
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore: Unused imports
-import * as $models from "./models.js"
+import * as $models from "./models.js";
 
-export function ListEntries(
-  req: $models.ListEntriesReq
-): $CancellablePromise<common$0.PageResult<$models.Entry | null>> {
-  return $Call.ByID(2180002316, req)
+export function ListEntries(req: $models.ListEntriesReq): $CancellablePromise<common$0.PageResult<$models.Entry | null>> {
+    return $Call.ByID(2180002316, req);
 }

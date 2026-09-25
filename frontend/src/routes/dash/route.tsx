@@ -14,7 +14,7 @@ function RouteComponent() {
       <DashSidebar />
       <SidebarInset className="min-h-0 flex-1 bg-background pt-(--header-height)">
         <main className="flex min-h-0 flex-1 flex-col overflow-hidden px-4">
-          <div className="mx-auto flex min-h-0 w-full flex-1 flex-col">
+          <div className="mx-auto flex min-h-0 min-w-0 w-full flex-1 flex-col">
             <Outlet />
           </div>
         </main>

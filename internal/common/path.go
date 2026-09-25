@@ -13,3 +13,7 @@ func GetExeDir() string {
 func GetExePath(filename string) string {
 	return exePath(filename, GetExeDir())
 }
+
+func GetMountDir() string {
+	return mountDir()
+}

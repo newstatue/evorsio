@@ -19,6 +19,7 @@ type Entry struct {
 
 	Name string
 	Type EntryType
+	Mime string
 }
 
 func NewEntryFromFS(dir string, entry *fsgen.Entry) *Entry {
@@ -33,5 +34,6 @@ func NewEntryFromFS(dir string, entry *fsgen.Entry) *Entry {
 		Resource: resource.New(path.Join(dir, name), resource.KindDrive),
 		Type:     typ,
 		Name:     name,
+		Mime:     entry.GetAttributes().GetMime(),
 	}
 }

@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router"
 import { DataTable } from "@/components/layout/data-table.tsx"
-import { columns } from "@/components/layout/dash/drive/columns"
+import { columns } from "@/components/layout/dash/drive/columns.tsx"
 import { ListEntries } from "@bindings/github.com/newstatue/evorsio/internal/drive/service.ts"
 import { useState } from "react"
 import {

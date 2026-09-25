@@ -16,6 +16,7 @@ type SubComponent string
 
 const (
 	SubComponentServer SubComponent = "server"
+	SubComponentMount  SubComponent = "mount"
 )
 
 type LogArg string

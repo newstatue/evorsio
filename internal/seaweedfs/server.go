@@ -26,7 +26,7 @@ func NewServer(l *slog.Logger) *Server {
 	return &Server{l: l}
 }
 
-func (s *Server) Start(ctx context.Context, path string, dataDir string) error {
+func (s *Server) Start(ctx context.Context, c *exec.Cmd) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -35,7 +35,7 @@ func (s *Server) Start(ctx context.Context, path string, dataDir string) error {
 	}
 
 	// 启动新进程
-	cmd := exec.CommandContext(ctx, path, "-log_json", "server", "-dir="+dataDir, "-filer", "-master.raftHashicorp", "-webdav")
+	cmd := c
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
 		return err

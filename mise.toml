@@ -16,7 +16,8 @@ _.path = [
 
 [bootstrap.packages]
 "winget:NSIS.NSIS" = { os = "windows" }
-
+"winget:WinFsp.WinFsp" = { os = "windows" }
+"brew-cask:macfuse" = { os = "macos" }
 
 [tasks.test]
 description = "运行所有 TEST"

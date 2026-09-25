@@ -3,31 +3,32 @@
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore: Unused imports
-import * as resource$0 from "../resource/models.js"
+import * as resource$0 from "../resource/models.js";
 
 export interface Entry {
-  ID: string
-  Kind: resource$0.Kind
-  Path: string
-  CreatedAt: string
-  UpdatedAt: string
-  Name: string
-  Type: EntryType
+    "ID": string;
+    "Kind": resource$0.Kind;
+    "Path": string;
+    "CreatedAt": string;
+    "UpdatedAt": string;
+    "Name": string;
+    "Type": EntryType;
+    "Mime": string;
 }
 
 export enum EntryType {
-  /**
-   * The Go zero value for the underlying type of the enum.
-   */
-  $zero = "",
+    /**
+     * The Go zero value for the underlying type of the enum.
+     */
+    $zero = "",
 
-  File = "file",
-  Folder = "folder",
-}
+    File = "file",
+    Folder = "folder",
+};
 
 export interface ListEntriesReq {
-  Cursor: string
-  Size: number
-  Dir: string
-  Name: string
+    "Cursor": string;
+    "Size": number;
+    "Dir": string;
+    "Name": string;
 }

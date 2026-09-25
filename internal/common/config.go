@@ -28,9 +28,10 @@ type DBConfig struct {
 }
 
 type FSConfig struct {
-	Path    string `env:"FS_PATH"`
-	DataDir string `env:"FS_DATA_DIR"`
-	Addr    string `env:"FS_ADDR" envDefault:"127.0.0.1:18888"`
+	Path     string `env:"FS_PATH"`
+	DataDir  string `env:"FS_DATA_DIR"`
+	Addr     string `env:"FS_ADDR" envDefault:"127.0.0.1:18888"`
+	MountDir string `env:"FS_MOUNT_DIR"`
 }
 
 func NewConfig() (*Config, error) {
@@ -57,6 +58,10 @@ func NewConfig() (*Config, error) {
 			return nil, err
 		}
 		cfg.FS.DataDir = filepath.Dir(file)
+	}
+
+	if cfg.FS.MountDir == "" {
+		cfg.FS.MountDir = GetMountDir()
 	}
 
 	return cfg, nil
