@@ -28,13 +28,26 @@ type Resource struct {
 	UpdatedAt time.Time
 }
 
-func New(dir string, kind Kind) *Resource {
+func NewID() string {
+	return uuid.NewV7().String()
+}
 
-	id := uuid.NewV7().String()
+func New(pth string, kind Kind) *Resource {
+
+	id := NewID()
 	return &Resource{
 		ID:   id,
 		Kind: kind,
-		Path: path.Join(string(kind), dir, id),
+		Path: pth,
+	}
+}
+
+func NewWithID(id string, pth string, kind Kind) *Resource {
+
+	return &Resource{
+		ID:   id,
+		Kind: kind,
+		Path: pth,
 	}
 }
 

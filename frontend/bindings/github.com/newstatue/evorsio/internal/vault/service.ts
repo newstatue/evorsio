@@ -7,8 +7,20 @@ import { Call as $Call, CancellablePromise as $CancellablePromise } from "@wails
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore: Unused imports
+import * as common$0 from "../common/models.js";
+
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore: Unused imports
 import * as $models from "./models.js";
 
-export function CreateVault(req: $models.CreateVaultReq): $CancellablePromise<void> {
-    return $Call.ByID(1149370124, req);
+export function CreateEntry(req: $models.CreateEntryReq): $CancellablePromise<void> {
+    return $Call.ByID(2224624140, req);
+}
+
+export function GeneratePassword(req: $models.GeneratePasswordReq): $CancellablePromise<string> {
+    return $Call.ByID(247052522, req);
+}
+
+export function ListEntries(req: $models.ListEntriesReq): $CancellablePromise<common$0.PageResult<$models.Entry | null>> {
+    return $Call.ByID(3615775484, req);
 }

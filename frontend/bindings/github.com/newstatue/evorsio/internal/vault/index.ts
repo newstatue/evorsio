@@ -7,5 +7,9 @@ export {
 };
 
 export type {
-    CreateVaultReq
+    CreateEntryReq,
+    Entry,
+    GeneratePasswordReq,
+    ListEntriesReq,
+    Payload
 } from "./models.js";

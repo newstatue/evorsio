@@ -26,16 +26,6 @@ type Options struct {
 	Symbols   bool
 }
 
-func DefaultOptions() Options {
-	return Options{
-		Length:    12,
-		Uppercase: true,
-		Lowercase: true,
-		Numbers:   true,
-		Symbols:   false,
-	}
-}
-
 func (g *Generator) Generate(opt Options) (string, error) {
 	var chars string
 	if opt.Uppercase {

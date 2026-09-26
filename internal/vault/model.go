@@ -1,7 +1,7 @@
 package vault
 
 import (
-	"net/url"
+	"path"
 
 	"github.com/newstatue/evorsio/internal/fsgen"
 	"github.com/newstatue/evorsio/internal/resource"
@@ -9,8 +9,20 @@ import (
 
 type Entry struct {
 	*resource.Resource
-	Payload Payload
+	Payload *Payload
 }
+
+type Index struct {
+	*resource.Resource
+	Target string
+}
+
+type Path string
+
+const (
+	PathData      Path = "/vault/data"
+	PathIndexHost Path = "/vault/index/host"
+)
 
 type Payload struct {
 	Title    string `json:"title"`
@@ -21,26 +33,32 @@ type Payload struct {
 }
 
 func NewEntry(payload *Payload) (*Entry, error) {
-	u, err := url.Parse(payload.URL)
-	if err != nil {
-		return nil, err
-	}
+	id := resource.NewID()
+	r := resource.NewWithID(id, PathData.Join(id+".age"), resource.KindVault)
 
 	return &Entry{
-		Resource: resource.New(u.Host, resource.KindVault),
-		Payload:  *payload,
+		Resource: r,
+		Payload:  payload,
 	}, nil
 }
 
-func NewEntryFromFS(dir string, entry *fsgen.Entry) *Entry {
-	return &Entry{
-		Resource: resource.NewFromFS(dir, entry),
-		Payload: Payload{
-			Title:    "",
-			Username: "",
-			Password: "",
-			URL:      "",
-			Notes:    "",
-		},
+func NewHostIndexFromEntry(entry *Entry, host string) *Index {
+	id := resource.NewID()
+
+	return &Index{
+		Resource: resource.NewWithID(id, PathIndexHost.Join(host, entry.ID), resource.KindVault),
+		Target:   entry.Path,
 	}
+}
+
+func NewEntryFromFS(entry *fsgen.Entry, payload *Payload) *Entry {
+	return &Entry{
+		Resource: resource.NewFromFS(string(PathData), entry),
+		Payload:  payload,
+	}
+}
+
+func (p Path) Join(elem ...string) string {
+	parts := append([]string{string(p)}, elem...)
+	return path.Join(parts...)
 }
