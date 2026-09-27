@@ -80,12 +80,6 @@ function RouteComponent() {
     table.nextPage()
   }
 
-  console.log({
-    currentPage,
-    hasCachedNextPage,
-    canNextPage,
-  })
-
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <DataTable

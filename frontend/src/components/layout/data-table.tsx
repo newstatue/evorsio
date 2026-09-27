@@ -1,6 +1,6 @@
 "use client"
 
-import { type RowData, type ReactTable } from "@tanstack/react-table"
+import {type RowData, type ReactTable} from "@tanstack/react-table"
 
 import {
   Table,
@@ -11,7 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 
-import { type DataTableFeatures } from "./data-table-features"
+import {type DataTableFeatures} from "./data-table-features"
 import {
   Select,
   SelectContent,
@@ -38,12 +38,14 @@ interface DataTableProps<TData extends RowData> {
   table: ReactTable<DataTableFeatures, TData>
   canNextPage: boolean
   goToNextPage: () => Promise<void>
+  onRowClick?: (data: TData) => void
 }
 
 export function DataTable<TData extends RowData>({
   table,
   canNextPage,
   goToNextPage,
+    onRowClick
 }: DataTableProps<TData>) {
   return (
     <div className="flex min-h-0 flex-1 flex-col">
@@ -75,6 +77,8 @@ export function DataTable<TData extends RowData>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
+                  className={onRowClick ? "cursor-pointer" : undefined}
+                  onClick={() => onRowClick?.(row.original)}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
