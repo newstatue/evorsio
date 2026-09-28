@@ -3,6 +3,7 @@ go = "1.27.0"
 node = "24.18.0"
 sqlc = "1.31.1"
 gh = "2.100.0"
+protobuf = "36.2"
 "github:seaweedfs/seaweedfs" = "4.47"
 protoc-gen-go = "1.36.12"
 protoc-gen-go-grpc = "1.6.2"
@@ -32,7 +33,7 @@ run = [
 ]
 
 [tasks.build-fs]
-description = "根据当前系统构建 Darwin Manager"
+description = "根据当前系统构建 SeaweedFS"
 run = "go run ./cmd/build-seaweedfs"
 [tasks.build-fs.env]
 FS_PATH = "./bin/weed"

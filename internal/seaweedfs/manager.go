@@ -71,6 +71,7 @@ func (m *Manager) Start(ctx context.Context) error {
 		"mount",
 		"-filer=127.0.0.1:8888",
 		"-dir="+m.cfg.MountDir,
+		"-dirAutoCreate",
 		"-volumeName=evorsio",
 	)
 	configureProcess(cmdM)
