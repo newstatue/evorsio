@@ -13,7 +13,9 @@ import {
 } from "@/components/ui/menubar"
 import { Kbd } from "@/components/ui/kbd.tsx"
 import { Window } from "@wailsio/runtime"
-import type { CSSProperties } from "react"
+import {type CSSProperties} from "react"
+import {SidebarTrigger} from "@/components/ui/sidebar.tsx";
+
 export function TitleBar() {
   const windowButtonClass =
     "h-full w-12 rounded-none [--wails-draggable:no-drag] active:not-aria-[haspopup]:translate-y-0"
@@ -22,6 +24,7 @@ export function TitleBar() {
     <header className="flex h-(--titlebar-height) shrink-0 items-center bg-sidebar [--wails-draggable:drag]">
       <div className="flex items-center">
         <Menubar className="rounded-sm border-0 font-normal [--wails-draggable:no-drag]">
+          <SidebarTrigger/>
           <MenubarMenu>
             <MenubarTrigger>File</MenubarTrigger>
             <MenubarContent>
@@ -60,6 +63,7 @@ export function TitleBar() {
               </MenubarGroup>
             </MenubarContent>
           </MenubarMenu>
+
         </Menubar>
       </div>
 

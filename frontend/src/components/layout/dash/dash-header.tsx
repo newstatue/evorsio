@@ -11,7 +11,7 @@ import {
 import { Separator } from "@/components/ui/separator.tsx"
 import { Fragment } from "react"
 import { cn } from "cn"
-import { System } from "@wailsio/runtime"
+import {platform} from "@/lib/platform.ts";
 
 export function DashHeader() {
   const { open, isMobile } = useSidebar()
@@ -27,7 +27,7 @@ export function DashHeader() {
           "shrink-0 bg-transparent transition-[width] duration-200 ease-linear",
           open && !isMobile
             ? "w-(--sidebar-width)"
-            : System.IsMac()
+            : platform.isMacOS()
               ? "w-(--header-macos-pd)"
               : "w-0"
         )}

@@ -32,7 +32,7 @@ import {
   NativeSelect,
   NativeSelectOption,
 } from "@/components/ui/native-select.tsx"
-import { System } from "@wailsio/runtime"
+import {platform} from "@/lib/platform.ts";
 
 interface DataTableProps<TData extends RowData> {
   table: ReactTable<DataTableFeatures, TData>
@@ -48,10 +48,10 @@ export function DataTable<TData extends RowData>({
     onRowClick
 }: DataTableProps<TData>) {
   return (
-    <div className="flex min-h-0 flex-1 flex-col">
-      <div className="min-h-0 flex-1 overflow-auto rounded-lg border">
-        <Table className="table-fixed">
-          <TableHeader className="sticky top-0 z-10 bg-muted">
+      <div className="flex flex-col">
+        <div className="overflow-x-auto rounded-lg border">
+          <Table className="table-fixed">
+            <TableHeader className="sticky top-0 z-10 bg-muted">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
@@ -108,7 +108,7 @@ export function DataTable<TData extends RowData>({
       </div>
       <div className="flex justify-end gap-2 py-4">
         <Field orientation="horizontal" className="w-fit">
-          {System.IsWindows() ? (
+          {platform.isWindowsLike ? (
             <Select
               value={String(table.state.pagination.pageSize)}
               onValueChange={(value) => {
