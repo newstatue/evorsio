@@ -1,6 +1,7 @@
 package vault
 
 import (
+	"context"
 	"crypto/rand"
 	"math/big"
 )
@@ -26,7 +27,7 @@ type Options struct {
 	Symbols   bool
 }
 
-func (g *Generator) Generate(opt Options) (string, error) {
+func (g *Generator) Generate(ctx context.Context, opt Options) (string, error) {
 	var chars string
 	if opt.Uppercase {
 		chars += uppercase

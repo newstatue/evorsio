@@ -21,6 +21,22 @@ export function GeneratePassword(req: $models.GeneratePasswordReq): $Cancellable
     return $Call.ByID(247052522, req);
 }
 
+export function Init(masterPass: string): $CancellablePromise<void> {
+    return $Call.ByID(2110262318, masterPass);
+}
+
+export function IsInitialized(): $CancellablePromise<boolean> {
+    return $Call.ByID(4023684474);
+}
+
+export function IsLocked(): $CancellablePromise<boolean> {
+    return $Call.ByID(1115375994);
+}
+
 export function ListEntries(req: $models.ListEntriesReq): $CancellablePromise<common$0.PageResult<$models.Entry | null>> {
     return $Call.ByID(3615775484, req);
+}
+
+export function Unlock(masterPass: string): $CancellablePromise<void> {
+    return $Call.ByID(1920064920, masterPass);
 }

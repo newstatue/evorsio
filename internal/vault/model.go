@@ -22,6 +22,7 @@ type Path string
 const (
 	PathData      Path = "/vault/data"
 	PathIndexHost Path = "/vault/index/host"
+	PathVault     Path = "/vault/.vault"
 )
 
 type Payload struct {

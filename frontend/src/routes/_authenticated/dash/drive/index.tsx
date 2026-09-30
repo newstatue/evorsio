@@ -11,7 +11,7 @@ import {
 import { useInfiniteQuery } from "@tanstack/react-query"
 import { features } from "@/components/layout/data-table-features.ts"
 
-export const Route = createFileRoute("/dash/drive/")({
+export const Route = createFileRoute("/_authenticated/dash/drive/")({
   component: RouteComponent,
   staticData: {
     breadcrumb: "存储",

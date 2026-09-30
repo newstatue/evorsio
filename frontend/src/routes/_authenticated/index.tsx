@@ -1,7 +1,20 @@
-import { createFileRoute, Link } from "@tanstack/react-router"
+import {createFileRoute, Link, redirect} from "@tanstack/react-router"
 import { Button } from "@/components/ui/button.tsx"
+import {IsInitialized, IsLocked} from "@bindings/github.com/newstatue/evorsio/internal/vault/service.ts";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/_authenticated/")({
+  beforeLoad: async () => {
+    const initialized = await IsInitialized()
+    if(!initialized){
+      throw redirect({to:"/init"})
+    }
+
+    const locked = await IsLocked()
+
+    if (locked) {
+      throw redirect({to:"/unlock"})
+    }
+  },
   component: RouteComponent,
   staticData: {
     breadcrumb: "首页",

@@ -4,20 +4,23 @@ import (
 	"context"
 	"errors"
 	"io"
+	"log/slog"
 
 	"github.com/newstatue/evorsio/internal/common"
 	"github.com/newstatue/evorsio/internal/fsgen"
 )
 
 type Service struct {
+	l     *slog.Logger
 	r     *Repository
 	filer fsgen.SeaweedFilerClient
 }
 
-func NewService(r *Repository, filer fsgen.SeaweedFilerClient) *Service {
+func NewService(l *slog.Logger, r *Repository, filer fsgen.SeaweedFilerClient) *Service {
 	return &Service{
 		r:     r,
 		filer: filer,
+		l:     l,
 	}
 }
 

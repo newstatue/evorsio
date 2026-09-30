@@ -15,57 +15,65 @@ import { Kbd } from "@/components/ui/kbd.tsx"
 import { Window } from "@wailsio/runtime"
 import {type CSSProperties} from "react"
 import {SidebarTrigger} from "@/components/ui/sidebar.tsx";
+import {useRouterState} from "@tanstack/react-router";
 
 export function TitleBar() {
   const windowButtonClass =
     "h-full w-12 rounded-none [--wails-draggable:no-drag] active:not-aria-[haspopup]:translate-y-0"
+  const pathname = useRouterState({
+    select: (state) => state.location.pathname,
+  })
+
+  const isDrive = pathname.startsWith("/dash")
 
   return (
     <header className="flex h-(--titlebar-height) shrink-0 items-center bg-sidebar [--wails-draggable:drag]">
-      <div className="flex items-center">
-        <Menubar className="rounded-sm border-0 font-normal [--wails-draggable:no-drag]">
-          <SidebarTrigger/>
-          <MenubarMenu>
-            <MenubarTrigger>File</MenubarTrigger>
-            <MenubarContent>
-              <MenubarGroup>
-                <MenubarItem>
-                  New Tab
-                  <MenubarShortcut>
-                    <Kbd className="rounded-sm">⌘K</Kbd>
-                  </MenubarShortcut>
-                </MenubarItem>
-                <MenubarItem>New Window</MenubarItem>
-              </MenubarGroup>
-              <MenubarSeparator />
-              <MenubarGroup>
-                <MenubarItem>Share</MenubarItem>
-                <MenubarItem>Print</MenubarItem>
-              </MenubarGroup>
-            </MenubarContent>
-          </MenubarMenu>
-          <MenubarMenu>
-            <MenubarTrigger>File</MenubarTrigger>
-            <MenubarContent>
-              <MenubarGroup>
-                <MenubarItem>
-                  New Tab
-                  <MenubarShortcut>
-                    <Kbd className="rounded-sm">⌘K</Kbd>
-                  </MenubarShortcut>
-                </MenubarItem>
-                <MenubarItem>New Window</MenubarItem>
-              </MenubarGroup>
-              <MenubarSeparator />
-              <MenubarGroup>
-                <MenubarItem>Share</MenubarItem>
-                <MenubarItem>Print</MenubarItem>
-              </MenubarGroup>
-            </MenubarContent>
-          </MenubarMenu>
+      {isDrive && (
+          <div className="flex items-center">
+            <Menubar className="rounded-sm border-0 font-normal [--wails-draggable:no-drag]">
+              <SidebarTrigger/>
+              <MenubarMenu>
+                <MenubarTrigger>File</MenubarTrigger>
+                <MenubarContent>
+                  <MenubarGroup>
+                    <MenubarItem>
+                      New Tab
+                      <MenubarShortcut>
+                        <Kbd className="rounded-sm">⌘K</Kbd>
+                      </MenubarShortcut>
+                    </MenubarItem>
+                    <MenubarItem>New Window</MenubarItem>
+                  </MenubarGroup>
+                  <MenubarSeparator />
+                  <MenubarGroup>
+                    <MenubarItem>Share</MenubarItem>
+                    <MenubarItem>Print</MenubarItem>
+                  </MenubarGroup>
+                </MenubarContent>
+              </MenubarMenu>
+              <MenubarMenu>
+                <MenubarTrigger>File</MenubarTrigger>
+                <MenubarContent>
+                  <MenubarGroup>
+                    <MenubarItem>
+                      New Tab
+                      <MenubarShortcut>
+                        <Kbd className="rounded-sm">⌘K</Kbd>
+                      </MenubarShortcut>
+                    </MenubarItem>
+                    <MenubarItem>New Window</MenubarItem>
+                  </MenubarGroup>
+                  <MenubarSeparator />
+                  <MenubarGroup>
+                    <MenubarItem>Share</MenubarItem>
+                    <MenubarItem>Print</MenubarItem>
+                  </MenubarGroup>
+                </MenubarContent>
+              </MenubarMenu>
 
-        </Menubar>
-      </div>
+            </Menubar>
+          </div>
+      )}
 
       <div className="flex-1" />
 

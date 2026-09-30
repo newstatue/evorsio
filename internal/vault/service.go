@@ -5,6 +5,7 @@ import (
 	"context"
 	"errors"
 	"io"
+	"log/slog"
 	"net/url"
 	"path"
 	"strings"
@@ -13,20 +14,102 @@ import (
 	"github.com/newstatue/evorsio/internal/common"
 	"github.com/newstatue/evorsio/internal/fsgen"
 	"github.com/newstatue/evorsio/internal/resource"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type Service struct {
+	l         *slog.Logger
 	vault     *Vault
 	filer     fsgen.SeaweedFilerClient
 	generator *Generator
 }
 
-func NewService(vault *Vault, filer fsgen.SeaweedFilerClient, generator *Generator) *Service {
+func NewService(l *slog.Logger, vault *Vault, filer fsgen.SeaweedFilerClient, generator *Generator) *Service {
 	return &Service{
 		vault:     vault,
 		filer:     filer,
 		generator: generator,
+		l:         l,
 	}
+}
+
+func (s *Service) IsInitialized(ctx context.Context) (bool, error) {
+	_, err := s.filer.LookupDirectoryEntry(
+		ctx,
+		&fsgen.LookupDirectoryEntryRequest{
+			Directory: path.Dir(string(PathVault)),
+			Name:      path.Base(string(PathVault)),
+		},
+	)
+	if err == nil {
+		return true, nil
+	}
+
+	s.l.ErrorContext(ctx, "报错", "err", err)
+	if status.Code(err) == codes.Unknown {
+		return false, nil
+	}
+
+	return false, err
+}
+
+func (s *Service) IsLocked() bool {
+	return s.vault.IsLocked()
+}
+
+func (s *Service) Init(ctx context.Context, masterPass string) error {
+	initialized, err := s.IsInitialized(ctx)
+	if err != nil {
+		return err
+	}
+	if initialized {
+		return nil
+	}
+
+	data, err := s.vault.Init(masterPass)
+	if err != nil {
+		return err
+	}
+
+	now := time.Now()
+	_, err = s.filer.CreateEntry(
+		ctx,
+		&fsgen.CreateEntryRequest{
+			Directory: path.Dir(string(PathVault)),
+			Entry: &fsgen.Entry{
+				Name:    path.Base(string(PathVault)),
+				Content: data,
+				Attributes: &fsgen.FuseAttributes{
+					FileMode: 0644,
+					FileSize: uint64(len(data)),
+					Mtime:    now.Unix(),
+					Crtime:   now.Unix(),
+				},
+			},
+		})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *Service) Unlock(ctx context.Context, masterPass string) error {
+	resp, err := s.filer.LookupDirectoryEntry(
+		ctx,
+		&fsgen.LookupDirectoryEntryRequest{
+			Directory: path.Dir(string(PathVault)),
+			Name:      path.Base(string(PathVault)),
+		},
+	)
+	if err != nil {
+		return err
+	}
+
+	entry := resp.GetEntry()
+
+	return s.vault.Unlock(masterPass, entry.GetContent())
 }
 
 type GeneratePasswordReq struct {
@@ -37,9 +120,9 @@ type GeneratePasswordReq struct {
 	Symbols   bool
 }
 
-func (s *Service) GeneratePassword(req GeneratePasswordReq) (string, error) {
+func (s *Service) GeneratePassword(ctx context.Context, req GeneratePasswordReq) (string, error) {
 
-	return s.generator.Generate(Options{
+	return s.generator.Generate(ctx, Options{
 		Length:    req.Length,
 		Uppercase: req.Uppercase,
 		Lowercase: req.Lowercase,

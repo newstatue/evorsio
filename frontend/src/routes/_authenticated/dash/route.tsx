@@ -1,10 +1,10 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router"
-import { SidebarInset } from "@/components/ui/sidebar"
+import { SidebarInset } from "@/components/ui/sidebar.tsx"
 import { DashHeader } from "@/components/layout/dash/dash-header.tsx"
 import { DashSidebar } from "@/components/layout/dash/dash-sidebar.tsx"
 import {platform} from "@/lib/platform.ts";
 
-export const Route = createFileRoute("/dash")({
+export const Route = createFileRoute("/_authenticated/dash")({
     component: RouteComponent,
 })
 

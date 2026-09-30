@@ -39,6 +39,7 @@ declare module "@tanstack/react-router" {
 }
 
 import { Events } from "@wailsio/runtime"
+import {Toaster} from "@/components/ui/toast.tsx";
 
 Events.On("common:ThemeChanged", (event) => {
   console.log(event.data)
@@ -49,6 +50,7 @@ createRoot(document.getElementById("root")!).render(
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <RouterProvider router={router} />
+        <Toaster/>
       </ThemeProvider>
     </QueryClientProvider>
   </StrictMode>

@@ -17,11 +17,14 @@ import (
 )
 
 const (
-	kErr            = string(constant.LogArgError)
-	kComponent      = string(constant.LogArgComponent)
-	vComponentApp   = string(constant.ComponentApp)
-	vComponentFS    = string(constant.ComponentFS)
-	vComponentWails = string(constant.ComponentWails)
+	kErr               = string(constant.LogArgError)
+	kComponent         = string(constant.LogArgComponent)
+	vComponentApp      = string(constant.ComponentApp)
+	vComponentFS       = string(constant.ComponentFS)
+	vComponentWails    = string(constant.ComponentWails)
+	kSubComponent      = string(constant.LogArgSubComponent)
+	vSubComponentDrive = string(constant.SubComponentDrive)
+	vSubComponentVault = string(constant.SubComponentVault)
 )
 
 func init() {
@@ -63,19 +66,13 @@ func main() {
 		_ = fs.Close()
 	}(d, fs)
 
-	v, err := vault.New(cfg.Vault.MasterPass)
-	if err != nil {
-		l.Error("创建 Vault 失败", kErr, err)
-		return
-	}
-
 	app := application.New(application.Options{
 		Name:        "app",
 		Description: "A demo of using raw HTML & CSS",
 		Logger:      l.With(kComponent, vComponentWails),
 		Services: []application.Service{
-			application.NewService(drive.NewService(drive.NewRepository(d), fs.Filer())),
-			application.NewService(vault.NewService(v, fs.Filer(), vault.NewGenerator())),
+			application.NewService(drive.NewService(al.With(kSubComponent, vSubComponentDrive), drive.NewRepository(d), fs.Filer())),
+			application.NewService(vault.NewService(al.With(kSubComponent, vSubComponentVault), vault.New(), fs.Filer(), vault.NewGenerator())),
 		},
 		Assets: application.AssetOptions{
 			Handler: application.AssetFileServerFS(Assets),

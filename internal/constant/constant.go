@@ -17,6 +17,8 @@ type SubComponent string
 const (
 	SubComponentServer SubComponent = "server"
 	SubComponentMount  SubComponent = "mount"
+	SubComponentVault  SubComponent = "vault"
+	SubComponentDrive  SubComponent = "drive"
 )
 
 type LogArg string
@@ -24,7 +26,7 @@ type LogArg string
 const (
 	LogArgError        LogArg = "error"
 	LogArgComponent    LogArg = "component"
-	LogArgSubComponent LogArg = "subcomponent"
+	LogArgSubComponent LogArg = "subComponent"
 )
 
 type ErrMsg string

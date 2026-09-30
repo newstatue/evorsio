@@ -26,7 +26,7 @@ import {PasswordInput} from "@/components/layout/copy-password-input.tsx";
 
 
 
-export const Route = createFileRoute("/dash/vault/")({
+export const Route = createFileRoute("/_authenticated/dash/vault/")({
     component: RouteComponent,
     staticData: {
         breadcrumb: "密码",
