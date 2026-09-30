@@ -108,7 +108,7 @@ export function DataTable<TData extends RowData>({
       </div>
       <div className="flex justify-end gap-2 py-4">
         <Field orientation="horizontal" className="w-fit">
-          {platform.isWindowsLike ? (
+          {platform.isWindowsLike() ? (
             <Select
               value={String(table.state.pagination.pageSize)}
               onValueChange={(value) => {
