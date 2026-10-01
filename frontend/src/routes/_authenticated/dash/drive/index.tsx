@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router"
-import { DataTable } from "@/components/layout/data-table.tsx"
+import {DataTable, DataTablePagination, DataTablePanel} from "@/components/layout/data-table.tsx"
 import { columns } from "@/components/layout/dash/drive/columns.tsx"
 import { ListEntries } from "@bindings/github.com/newstatue/evorsio/internal/drive/service.ts"
 import { useState } from "react"
@@ -81,10 +81,9 @@ function RouteComponent() {
   }
 
   return (
-      <DataTable
-        table={table}
-        canNextPage={canNextPage}
-        goToNextPage={goToNextPage}
-      />
+      <DataTable>
+          <DataTablePanel table={table}/>
+          <DataTablePagination table={table} canNextPage={canNextPage} goToNextPage={goToNextPage}/>
+      </DataTable>
   )
 }

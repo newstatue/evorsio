@@ -132,14 +132,17 @@ func (s *Service) GeneratePassword(ctx context.Context, req GeneratePasswordReq)
 }
 
 type CreateEntryReq struct {
-	Title    string
+	Title    string `validate:"required" label:"标题"`
 	Username string
-	Password string
-	URL      string
+	Password string `validate:"required,min=8" label:"密码"`
+	URL      string `validate:"omitempty,url"`
 	Notes    string
 }
 
 func (s *Service) CreateEntry(ctx context.Context, req CreateEntryReq) error {
+	if err := common.ValidateStruct(req); err != nil {
+		return err
+	}
 	entry, err := NewEntry(&Payload{
 		Title:    req.Title,
 		Username: req.Username,

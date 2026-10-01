@@ -5,6 +5,7 @@ import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/compo
 import {Field, FieldError, FieldLabel} from "@/components/ui/field.tsx";
 import {Input} from "@/components/ui/input.tsx";
 import {Button} from "@/components/ui/button.tsx";
+import {toast} from "@/components/ui/toast.tsx";
 
 export const Route = createFileRoute('/(auth)/unlock')({
   component: RouteComponent,
@@ -33,8 +34,12 @@ function RouteComponent() {
       await navigate({
         to: "/dash",
       })
-    }catch {
-      setError("解锁错误")
+    }catch(err) {
+      toast.add({
+        title: "解锁失败",
+        description: (err as Error).message,
+        type: "error",
+      })
     }finally {
       setLoading(false)
     }

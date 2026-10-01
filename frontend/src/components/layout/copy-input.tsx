@@ -13,6 +13,7 @@ type CopyInputProps = {
     value?: string
     label?: string
     readOnly?: boolean
+    onChange?: (value: string) => void
 }
 
 export function CopyInput({
@@ -20,7 +21,7 @@ export function CopyInput({
                               value = "",
                               label = "内容",
                               readOnly = false,
-
+                              onChange
                           }: CopyInputProps) {
     const { copyToClipboard, copiedValue } = useCopyToClipboard()
 
@@ -31,6 +32,7 @@ export function CopyInput({
                 autoComplete="off"
                 value={value}
                 readOnly={readOnly}
+                onChange={(e) => onChange?.(e.target.value)}
             />
 
             <InputGroupAddon align="inline-end">

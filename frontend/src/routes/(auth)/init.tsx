@@ -5,6 +5,7 @@ import {Input} from "@/components/ui/input.tsx";
 import {Button} from "@/components/ui/button.tsx";
 import {useState} from "react";
 import {Init} from "@bindings/github.com/newstatue/evorsio/internal/vault/service.ts";
+import {toast} from "@/components/ui/toast.tsx";
 
 export const Route = createFileRoute('/(auth)/init')({
     component: RouteComponent,
@@ -40,8 +41,12 @@ function RouteComponent() {
             await navigate({
                 to: "/dash",
             })
-        }catch {
-            setError("初始化错误")
+        }catch(err) {
+            toast.add({
+                title: "设置失败",
+                description: (err as Error).message,
+                type: "error",
+            })
         }finally {
             setLoading(false)
         }

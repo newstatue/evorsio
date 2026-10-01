@@ -30,6 +30,7 @@ const (
 func init() {
 	common.InitLogger()
 	common.InitMigration(db.Migrations)
+	common.InitI18n(common.LocaleZH)
 	common.InitValidator(common.LocaleZH)
 }
 
